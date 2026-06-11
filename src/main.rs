@@ -65,7 +65,13 @@ struct Solution;
 
 impl Solution {
     pub fn running_sum(nums: Vec<i32>) -> Vec<i32> {
-        
+        let mut rolling_sum: Vec<i32> = vec![];
+        let mut current_sum: i32 = 0;
+        for num in nums {
+            current_sum += num;
+            rolling_sum.push(current_sum);
+        }
+        rolling_sum
     }
 }
 
