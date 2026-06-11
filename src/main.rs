@@ -62,7 +62,7 @@ impl Solution {
             .filter(|c| c.is_alphanumeric())
             .collect();
         
-        let reveresd: String = filtered
+        let reveresed: String = filtered
             .chars()
             .rev()
             .collect();
