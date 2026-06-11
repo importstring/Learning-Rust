@@ -56,7 +56,13 @@ struct Solution;
 
 impl Solution {
     pub fn is_palindrome(s: String) -> bool {
+        let filtered: String = s
+            .to_lowercase()
+            .chars() 
+            .filter(|x| x.is_alphanumeric());
+            .collect(String);
         
+            return filtered = filtered.rev()
     }
 }
 
