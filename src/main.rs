@@ -60,9 +60,11 @@ impl Solution {
             .to_lowercase()
             .chars() 
             .filter(|c| c.is_alphanumeric());
-            .collect(String);
+            .collect();
         
-        return filtered = filtered.rev()
+        let reveresd: String = filtered.chars().rev().collect();
+
+        filtered == reversed
     }
 }
 
