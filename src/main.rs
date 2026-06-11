@@ -64,14 +64,8 @@ impl Solution {
         let mut current = nums[0];
 
         for &x in nums.iter().skip(1) {
-            let extend = current + x;
-            let restart = x;
-            current = if extend > restart { extend } else { restart };
-
-            // Update global best
-            if current > best {
-                best = current;
-            }
+            current = (current + x).max(x);
+            best.max(current);
         }
 
         best
