@@ -62,7 +62,7 @@ impl Solution {
             .filter(|c| c.is_alphanumeric());
             .collect(String);
         
-            return filtered = filtered.rev()
+        return filtered = filtered.rev()
     }
 }
 
