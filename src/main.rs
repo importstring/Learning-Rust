@@ -59,10 +59,13 @@ impl Solution {
         let filtered: String = s
             .to_lowercase()
             .chars() 
-            .filter(|c| c.is_alphanumeric());
+            .filter(|c| c.is_alphanumeric())
             .collect();
         
-        let reveresd: String = filtered.chars().rev().collect();
+        let reveresd: String = filtered
+            .chars()
+            .rev()
+            .collect();
 
         filtered == reversed
     }
