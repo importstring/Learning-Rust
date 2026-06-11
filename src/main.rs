@@ -59,7 +59,7 @@ impl Solution {
         let filtered: String = s
             .to_lowercase()
             .chars() 
-            .filter(|x| x.is_alphanumeric());
+            .filter(|c| c.is_alphanumeric());
             .collect(String);
         
             return filtered = filtered.rev()
