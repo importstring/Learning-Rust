@@ -44,17 +44,22 @@ struct Solution;
 
 impl Solution {
     pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
-        let mut zereod_cols: Vec<i32> = vec![];
+        let mut zero_cols: Vec<usize> = vec::new();
 
         for (idx, row) in matrix.iter().enumerate() {
-            if row.contains(&0) {
-                zereod_cols.push(row.iter().position(|&z| z == 0));
-                matrix[idx].fill(0);           
-            }
-            else {
-                for col in zereod_cols.iter() {
-                    matrix[idx][col] = 0;
+
+            match row.iter().position(|&r| r == 0) {
+
+                Some(col_idx) => {
+                    zero_cols.push(col_idx);
                 }
+
+                None => {
+                    if zero_cols.contains(col_idx) {
+                        matrix[idx][col_idx] = 0;
+                    }
+                }
+
             }
         }
     }
