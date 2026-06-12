@@ -101,11 +101,6 @@ impl Solution {
         }
 
         if max_so_far < 0 {
-            // Just max so far because
-            // max = some negative which 
-            // means that everything is negative
-            // hence the less negatives the 
-            // greater the final answer
             max_so_far     
         } else {
             max_so_far.max(total_sum - min_so_far)
