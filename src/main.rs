@@ -47,7 +47,6 @@ impl Solution {
         let mut zero_cols: Vec<usize> = Vec::new();
 
         for (idx, row) in matrix.iter_mut().enumerate() {
-            
             if row.contains(&0) {
                 for (j, &val) in row.iter().enumerate() {
                     match val {
@@ -55,7 +54,6 @@ impl Solution {
                         _ => {}
                     }
                 }
-
                 row.fill(0);
             }
         }
