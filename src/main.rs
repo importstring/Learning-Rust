@@ -82,7 +82,36 @@ struct Solution;
 
 impl Solution {
     pub fn max_subarray_sum_circular(nums: Vec<i32>) -> i32 {
-        
+        let mut log: Vec<usize> = vec![];
+        let mut current: i32 = nums[0];
+        let mut best = nums[0];
+
+        for (idx, &x) in nums.iter().skip(1).enumerate() {
+            if current < x {
+                log.clear();
+                current = x;
+            }
+            else {
+                current += x;
+            }
+            
+            log.push(idx + 1);
+            best = best.max(current);
+        }
+
+        for (idx, &x) in nums.iter().enumerate() {
+            if log.contains(&idx) || current <  x {
+                log.clear();
+                current = x;
+            }
+            else {
+                current += x;
+            }
+
+            best = best.max(current);
+        }
+
+        best 
     }
 }
 

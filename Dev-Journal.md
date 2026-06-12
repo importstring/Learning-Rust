@@ -88,3 +88,45 @@ x.max(y)
 I had already solved the Leatcode problem beforehand but the solution used max and it greatly simplified my code.
 
 I'm also noticing that writing in Rust has already started becoming very natural to me. It's a lot like python in certain ways at least the way I write my Python code—with a little too much perfectionism.
+
+<h4 style="margin-bottom:0;">Notes pre-writing</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-12 · Rust Learning Day 3</em>
+</p>
+
+```Rust
+// ❌let mut log: Vec<i32> = vec![]; because idx will be usize?!?!
+// so instead:
+let mut log: Vec<usize> = vec![];
+// ...
+for (idx, x)  in nums.iter().skip(1).enumerate() {
+  // ...
+  log.push(idx + 1); // now works
+}
+```
+
+Then I'm starting to learn about the borrowing system which feels confusing right now but I'm already starting to see the logic behind it.
+
+```Rust
+let mut current: i32 = nums[0];
+for (idx, x)  in nums.iter().skip(1).enumerate() {
+  if current < *x {
+    // ... prevents errors by adding *x because current is i32 and
+    // x is a reference to a value
+  }
+}
+```
+
+But there's a better solution
+
+```Rust
+let mut current: i32 = nums[0];
+for (idx, &x) in nums.iter().skip(1).enumerate() {
+  if current < x {
+    // ... Here by borrowing we avoid the missmatched type issue
+    // because we borrow from x
+  }
+}
+```
+
+— just a draft until I write this out tonight
