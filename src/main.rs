@@ -48,14 +48,17 @@ impl Solution {
 
         for (idx, row) in matrix.iter().enumerate() {
             if row.contains(&0) {
-                matrix[idx] = row.fill(0);
+                for col in 0..2{
+                    matrix[idx][col] = row.fill(0);
+                }
+                
                 zereod_cols.push(
                     row.iter().position(|&z| z == 0)
                 );
             }
             else {
                 for col in zereod_cols.iter() {
-                    matrix[idx][col] = 0
+                    matrix[idx][*col] = 0
                 }
             }
         
