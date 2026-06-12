@@ -87,7 +87,7 @@ impl Solution {
         let mut best = nums[0];
 
         for (idx, &x) in nums.iter().skip(1).enumerate() {
-            if current < x {
+            if current + x < x {
                 log.clear();
                 current = x;
             }
@@ -100,7 +100,7 @@ impl Solution {
         }
 
         for (idx, &x) in nums.iter().enumerate() {
-            if log.contains(&idx) || current <  x {
+            if log.contains(&idx) || current + x <  x {
                 log.clear();
                 current = x;
             }
