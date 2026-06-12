@@ -1,6 +1,6 @@
 <h4 style="margin-bottom:0;">First Hours into Learning Rust</h4>
 <p style="margin-top:0; font-size:0.85em;">
-  <em>2026-06-10 · Rust Learning Day 1</em>
+  <em>2026-06-11 · Rust Learning Day 1</em>
 </p>
 
 > Lot's of confusion but my focus has been to avoid LLM code like it's the plague. Autocorrect is off and so is Copilot.
@@ -70,3 +70,21 @@
 >     }
 > }
 > ```
+
+<h4 style="margin-bottom:0;">Steping it up—Leatcode Medium Difficulty</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-11 · Rust Learning Day 2</em>
+</p>
+
+Today I worked on a medium difficulty leatcode problem. It went pretty well but I learned some new syntax. This was a command I used quite a lot in Python but getting familiar with it in Rust was nice.
+
+```Rust
+let x = 3
+let y = 4
+x.max(y)
+// Output: 4
+```
+
+I had already solved the Leatcode problem beforehand but the solution used max and it greatly simplified my code.
+
+I'm also noticing that writing in Rust has already started becoming very natural to me. It's a lot like python in certain ways at least the way I write my Python code—with a little too much perfectionism.
