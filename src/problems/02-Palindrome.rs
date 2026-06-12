@@ -40,18 +40,7 @@ struct Solution;
 
 impl Solution {
     pub fn is_palindrome(s: String) -> bool {
-        let filtered: String = s
-            .to_lowercase()
-            .chars() 
-            .filter(|c| c.is_alphanumeric())
-            .collect();
-        
-        let reversed: String = filtered
-            .chars()
-            .rev()
-            .collect();
-
-        filtered == reversed
+        // .. your code goes here
     }
 }
 
