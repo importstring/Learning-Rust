@@ -82,21 +82,7 @@ struct Solution;
 
 impl Solution {
     pub fn max_subarray_sum_circular(nums: Vec<i32>) -> i32 {
-        // TODO:
-        // 1. Compute in one pass:
-        //    - total_sum of all elements
-        //    - max_ending_here / max_so_far (Kadane for max)
-        //    - min_ending_here / min_so_far (Kadane for min)
-        //
-        // 2. Edge case: if max_so_far < 0, return max_so_far
-        //    (all numbers are negative, so wrapping would choose the empty subarray)
-        //
-        // 3. Otherwise:
-        //    let non_wrap = max_so_far;
-        //    let wrap = total_sum - min_so_far;
-        //    return non_wrap.max(wrap);
-
-        0 // placeholder so it compiles until you fill it in
+        
     }
 }
 
