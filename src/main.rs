@@ -44,27 +44,29 @@ struct Solution;
 
 impl Solution {
     pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
-        let mut zero_cols: Vec<usize> = vec::new();
+        let mut zero_cols: Vec<usize> = Vec::new();
 
-        for (idx, row) in matrix.iter().enumerate() {
-
+        for row in matrix.iter_mut() {
             match row.iter().position(|&r| r == 0) {
-
                 Some(col_idx) => {
+                    // remember this zero column
                     zero_cols.push(col_idx);
+                    // zero the entire row
+                    row.fill(0);
                 }
-
                 None => {
-                    if zero_cols.contains(col_idx) {
-                        matrix[idx][col_idx] = 0;
+                    // this row had no zero originally,
+                    // but we still need to zero any columns seen earlier
+                    for &col in zero_cols.iter() {
+                        if col < row.len() {
+                            row[col] = 0;
+                        }
                     }
                 }
-
             }
         }
     }
 }
-
 
 
 // Tests
