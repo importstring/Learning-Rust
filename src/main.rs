@@ -13,7 +13,24 @@ Note that:
 - The division between two integers always truncates toward zero.
 - There will not be any division by zero.
 - The input represents a valid arithmetic expression in a reverse polish notation.
-- The answer and all the intermediate calculations can be represented in a 32-bit integer.
+- The answer and all the intermediate calculations can be represented
+  in a 32-bit integer.
+
+Examples:
+
+Input:  tokens = ["2","1","+","3","*"]
+Output: 9
+Explanation: ((2 + 1) * 3) = 9.
+
+Input:  tokens = ["4","13","5","/","+"]
+Output: 6
+Explanation: 4 + (13 / 5) = 6.
+
+Input:  tokens = ["10","6","9","3","+","-11","*","/","*","17","+","5","+"]
+Output: 22
+
+Input:  tokens = ["42"]
+Output: 42
 */
 
 /* Helpful resources:
@@ -35,14 +52,7 @@ struct Solution;
 
 impl Solution {
     pub fn eval_rpn(tokens: Vec<String>) -> i32 {
-        // your implementation goes here
-        // Hint:
-        // - Create a Vec<i32> as a stack.
-        // - Iterate over tokens.
-        // - Use `match token.as_str()` to handle "+", "-", "*", "/", or "number".
-        // - For operators, pop 2 values, apply the operation in the correct order,
-        //   then push the result back.
-        // - At the end, the stack should have exactly one value: return it.
+        
     }
 }
 
