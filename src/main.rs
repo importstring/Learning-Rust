@@ -46,22 +46,21 @@ impl Solution {
     pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
         let mut zero_cols: Vec<usize> = Vec::new();
 
-        for row in matrix.iter_mut() {
-            match row.iter().position(|&r| r == 0) {
-                Some(col_idx) => {
-                    // remember this zero column
-                    zero_cols.push(col_idx);
-                    // zero the entire row
-                    row.fill(0);
+        for (idx, row) in matrix.iter().enumerate() {
+            
+            if row.contains(&0) {
+                match row.iter().position(|&z| z == 0) {
+                    Some(col_idx) => {zero_cols.push(col_idx)}
+                    None => {}
                 }
-                None => {
-                    // this row had no zero originally,
-                    // but we still need to zero any columns seen earlier
-                    for &col in zero_cols.iter() {
-                        if col < row.len() {
-                            row[col] = 0;
-                        }
-                    }
+                matrix[idx].fill(0);
+            }
+        }
+
+        for row in matrix.iter() {
+            for &col in zero_cols.iter() {
+                if col < row.len() {
+                    row[col] = 0;
                 }
             }
         }
