@@ -44,24 +44,30 @@ struct Solution;
 
 impl Solution {
     pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
-        let mut zero_cols: Vec<usize> = Vec::new();
+        let m = matrix.len();
+        if m == 0 {
+            return;
+        }
+        let n = matrix[0].len();
 
-        for (idx, row) in matrix.iter_mut().enumerate() {
-            if row.contains(&0) {
-                for (j, &val) in row.iter().enumerate() {
-                    match val {
-                        0 => zero_cols.push(j),
-                        _ => {}
-                    }
+        let mut zero_rows = vec![false; m];
+        let mut zero_cols = vec![false; n];
+
+        // 1) Mark rows and columns that contain a 0
+        for i in 0..m {
+            for j in 0..n {
+                if matrix[i][j] == 0 {
+                    zero_rows[i] = true;
+                    zero_cols[j] = true;
                 }
-                row.fill(0);
             }
         }
 
-        for row in matrix.iter_mut() {
-            for &col in zero_cols.iter() {
-                if col < row.len() {
-                    row[col] = 0;
+        // 2) Apply zeros based on markers
+        for i in 0..m {
+            for j in 0..n {
+                if zero_rows[i] || zero_cols[j] {
+                    matrix[i][j] = 0;
                 }
             }
         }
