@@ -44,7 +44,7 @@ struct Solution;
 
 impl Solution {
     pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
-        let mut zereod_cols: Vec<usize> = vec![];
+        let mut zereod_cols: Vec<i32> = vec![];
 
         for (idx, row) in matrix.iter().enumerate() {
             if row.contains(&0) {
@@ -61,11 +61,6 @@ impl Solution {
                     matrix[idx][*col] = 0
                 }
             }
-        
-        matrix
-
-            
-
         }
     }
 }
