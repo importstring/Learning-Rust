@@ -60,18 +60,12 @@ struct Solution;
 
 impl Solution {
     pub fn max_sub_array(nums: Vec<i32>) -> i32 {
-        let mut best = nums[0];
         let mut current = nums[0];
+        let mut best = nums[0];
 
         for &x in nums.iter().skip(1) {
-            let extend = current + x;
-            let restart = x;
-            current = if extend > restart { extend } else { restart };
-
-            // Update global best
-            if current > best {
-                best = current;
-            }
+            current = (current + x).max(x);
+            best = best.max(current);
         }
 
         best
