@@ -40,13 +40,30 @@ matrix[i][j] = 0;
 */
 
 
-
 struct Solution;
-
 
 impl Solution {
     pub fn set_zeroes(matrix: &mut Vec<Vec<i32>>) {
+        let mut zereod_cols: Vec<usize> = vec![];
+
+        for (idx, row) in matrix.iter().enumerate() {
+            if row.contains(&0) {
+                matrix[idx] = row.fill(0);
+                zereod_cols.push(
+                    row.iter().position(|&z| z == 0)
+                );
+            }
+            else {
+                for col in zereod_cols.iter() {
+                    matrix[idx][col] = 0
+                }
+            }
         
+        matrix
+
+            
+
+        }
     }
 }
 
