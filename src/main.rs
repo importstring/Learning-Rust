@@ -76,6 +76,25 @@ Output: -2
 Explanation: Subarray [-2] has maximum sum.
 */
 
+/* ## hint ## ;)
+The max sub-array is either:
+—> The greatest chunk 
+ □□■■■■ | ■■□□□■ | ■■□□□□
+-> The two greatest chunks 
+>>> total_sum_nums - smallest sum
+ □□■■□□ | □■■□□□ | □□■■□
+If you can calculate both:
+
+if max_so_far < 0 {
+    // Since all values are negative
+    // The max will always be 
+    // max_so_far 
+    max_so_far
+}
+else {
+    max_so_far.max(total_sum - min_so_far)
+}
+*/ 
 
 struct Solution;
 
