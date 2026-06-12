@@ -90,7 +90,26 @@ impl Solution {
         let mut current_min = nums[0];
         let mut min_so_far  = nums[0];
 
-        best 
+        for &x in nums.iter().skip(1) {
+            current_max = x.max(current_max + x);
+            max_so_far = max_so_far.max(current_max);
+
+            current_min = x.min(current_min + x);
+            min_so_far = min_so_far.min(current_min);
+
+            total_sum += x;
+        }
+
+        if max_so_far < 0 {
+            // Just max so far because
+            // max = some negative which 
+            // means that everything is negative
+            // hence the less negatives the 
+            // greater the final answer
+            max_so_far     
+        } else {
+            max_so_far.max(total_sum - min_so_far)
+        }
     }
 }
 
