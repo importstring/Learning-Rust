@@ -73,7 +73,7 @@
 
 <h4 style="margin-bottom:0;">Steping it up—Leatcode Medium Difficulty</h4>
 <p style="margin-top:0; font-size:0.85em;">
-  <em>2026-06-11 · Rust Learning Day 2</em>
+  <em>2026-06-11 · Rust Learning Day 3</em>
 </p>
 
 Today I worked on a medium difficulty leatcode problem. It went pretty well but I learned some new syntax. This was a command I used quite a lot in Python but getting familiar with it in Rust was nice.
