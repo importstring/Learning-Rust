@@ -66,11 +66,22 @@ struct Solution;
 
 impl Solution {
     pub fn relu(matrix: Vec<Vec<f32>>) -> Vec<Vec<f32>> {
-        // your code here
-        // Hint:
-        // - Preserve the shape: same rows, same cols.
-        // - For each element x, output max(0.0, x).
-        
+        if matrix.is_empty() {
+            return vec![];
+        }
+
+        let rows = matrix.len();
+        let cols = matrix[0].len();
+
+        let mut result = vec![vec![0.0; cols]; rows];
+
+        for (i, row) in matrix.iter().enumerate() {
+            for (j, &x) in row.iter().enumerate() {
+                result[i][j] = x.max(0.0);
+            }
+        }
+
+        result
     }
 }
 
