@@ -68,7 +68,13 @@ impl Solution {
         let mut result = vec![vec![0.0; cols]; rows];
 
         // your code here: fill result[i][j] = matrix[i][j] + bias[j]
-        todo!()
+        for i in 0..rows {
+            for j in 0..cols {
+                result[i][j] = matrix[i][j] + bias[j];
+            }
+        }
+        
+        Some(result)
     }
 }
 
