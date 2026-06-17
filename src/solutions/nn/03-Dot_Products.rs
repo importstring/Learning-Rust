@@ -77,19 +77,11 @@ struct Solution;
 
 impl Solution {
     pub fn dot(a: Vec<f32>, b: Vec<f32>) -> Option<f32> {
-        if a.is_empty() || b.is_empty() {
+        if a.len() != b.len() || a.is_empty() {
             return None;
         }
 
-        if a.len() != b.len() {
-            return None;
-        }
-
-        if a.len() == 0 {
-            return None;
-        }
-        
-        let mut total: f32 = 0.0;
+        let mut total = 0.0_f32;
         for i in 0..a.len() {
             total += a[i] * b[i];
         }
