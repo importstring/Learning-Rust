@@ -167,7 +167,6 @@ impl Solution {
         result
     }
 
-
     pub fn dense_forward(
         x: Vec<Vec<f32>>,
         w: Vec<Vec<f32>>,
@@ -178,6 +177,14 @@ impl Solution {
         // 2. z_b = add_bias(z, b)?    // (B x O)
         // 3. y = relu(z_b)            // (B x O)
         // 4. return Some(y)
+        if x.is_empty() || w.is_empty() || b.is_empty() {
+            return None;
+        }
+        
+        let z = Self::matmul(x, w);
+        let z_b = Self::add_bias(z?, b);
+        let y = Self::relu(z_b?);
+        Some(y)
 
     }
 }
