@@ -77,12 +77,24 @@ struct Solution;
 
 impl Solution {
     pub fn dot(a: Vec<f32>, b: Vec<f32>) -> Option<f32> {
-        // your code goes here
-        // Hint:
-        // - First check lengths.
-        // - Then loop over indices or zip iterators.
-        // - Accumulate into a sum: sum += a[i] * b[i];
-        todo!()
+        if a.is_empty() || b.is_empty() {
+            return None;
+        }
+
+        if a.len() != b.len() {
+            return None;
+        }
+
+        if a.len() == 0 {
+            return None;
+        }
+        
+        let mut total: f32 = 0.0;
+        for i in 0..a.len() {
+            total += a[i] * b[i];
+        }
+
+        Some(total)
     }
 }
 
