@@ -89,13 +89,23 @@ struct Solution;
 
 impl Solution {
     pub fn transpose(matrix: Vec<Vec<f32>>) -> Vec<Vec<f32>> {
-        // your code goes here
-        // Hints:
-        // - If matrix is empty, return vec![].
-        // - Let rows = matrix.len(), cols = matrix[0].len().
-        // - Allocate a result of shape (cols x rows) filled with 0.0.
-        // - Then set result[j][i] = matrix[i][j] in nested loops.
-        todo!()
+
+        if matrix.is_empty() {
+            return vec![];
+        }
+
+        let rows = matrix.len();
+        let cols = matrix[0].len();
+        
+        let mut result = vec![vec![0.0; rows]; cols];
+
+        for (idx, row) in matrix.iter().enumerate() {
+            for (c_idx, &num) in row.iter().enumerate() {
+                result[c_idx][idx] = num;
+            }
+        }
+
+        result
     }
 }
 
