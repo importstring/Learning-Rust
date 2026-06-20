@@ -100,6 +100,29 @@ fn transpose(a: &[Vec<f32>]) -> Vec<Vec<f32>> {
     out
 }
 
+fn add_bias(matrix: Vec<Vec<f32>>, bias: Vec<f32>) -> Option<Vec<Vec<f32>>> {
+    
+    if matrix.is_empty() {
+        return Some(vec![]);
+    }
+
+    let rows = matrix.len();
+    let cols = matrix[0].len();
+
+    if bias.len() != cols {
+        return None;
+    }
+
+    let mut result = vec![vec![0.0; cols]; rows];
+
+    for i in 0..rows {
+        for j in 0..cols {
+            result[i][j] = matrix[i][j] + bias[j];
+        }
+    }
+    
+    Some(result)
+}
 impl Solution {
     pub fn dense_backward(
         x: Vec<Vec<f32>>,
