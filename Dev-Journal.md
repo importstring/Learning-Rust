@@ -1,4 +1,4 @@
-# Pinned Entry:
+### 📌 Pinned Entry 
 <h4 style="margin-bottom:0;">First Weeks into Learning Rust</h4>
 <p style="margin-top:0; font-size:0.85em;">
   <em>2026-06-22 · Rust Learning week 3</em>
