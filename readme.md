@@ -1,6 +1,6 @@
-## My Journey to Learning Rust Publisized
+## Learning AI without Python Libraries
 
-I'm learned Rust for ML and mainly out of curiousity.
+So I've been doing ML projects for a while now but I've realized I've just been calling libraries and calling it machine learning. Sure it works but I'm not understanding deeply what's going on. That's why I'm learning Rust. It will force me to learn algorithms, in-depth how AI works, and fill my curiousity for the language.
 
 My final challenge will be building a neural network and I'll be working up to it by building mini projects and solving easy–hard leatcode problems.
 
