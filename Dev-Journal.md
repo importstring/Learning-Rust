@@ -4,6 +4,7 @@
 <p style="margin-top:0; font-size:0.85em;">
   <em>2026-06-22 · Rust Learning week 3</em>
 </p>
+So I started on this journey realizing I had no idea what the functions I was calling were doing. I'd apply a softmax to some values that seemed very random to me following documentation, writing in my notes what intuitively everything did but I truely didn't understand what I was writing.
 
 I've been working on MSE, matrix multiplication, dot products, relu, and then working that together to create a super simply feed forward network.
 
