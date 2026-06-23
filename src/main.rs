@@ -143,6 +143,11 @@ fn matrices_close(a: &[Vec<f32>], b: &[Vec<f32>], eps: f32) -> bool {
 // Helper to check that each row sums to ~1.0
 fn rows_sum_to_one(matrix: &[Vec<f32>], eps: f32) -> bool {
     for row in matrix {
+        // Allow empty rows (shape rule says they’re valid)
+        if row.is_empty() {
+            continue;
+        }
+
         let sum: f32 = row.iter().sum();
         if (sum - 1.0).abs() > eps {
             return false;
