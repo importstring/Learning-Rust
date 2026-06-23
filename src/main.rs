@@ -132,22 +132,7 @@ impl Solution {
         let batch = x.len();
         let in_dim = x[0].len();
         let out_dim = w[0].len();
-
-        // dX shape: (batch, in_dim)
-        // dW shape: (in_dim, out_dim)
-        // db shape: (out_dim)
-
-        // Implement using matmul, transpose, and elementwise sums.
-
-        // dX = ?
-        // dW = ?
-        // db = ?
-
-        let dx = vec![vec![0.0; in_dim]; batch];
-        let dw = vec![vec![0.0; out_dim]; in_dim];
-        let db = vec![0.0; out_dim];
-
-        (dx, dw, db)
+           
     }
 }
 
