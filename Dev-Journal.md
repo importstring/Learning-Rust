@@ -33,6 +33,23 @@ pub fn dense_forward(
 How I've been learning thusfar:
 I've been leaning on AI to roadmap my progression from skillset to skillset and have it generate LeatCode style files for me to build ML stuff. It's been working great but I'm hoping I can reach out to someone more senior for some guidance on how they'd go from here.
 
+```Rust
+fn main() {
+  println!("\x1b[1m\x1b[35mNN Runner: Dense Layer Forward\x1b[0m");
+
+  // Identity-like layer, no bias
+  print_result(
+      "Test Case 1",
+      vec![vec![1.0, 2.0]],
+      vec![vec![1.0, 0.0], vec![0.0, 1.0]],
+      vec![0.0, 0.0],
+      Some(vec![vec![1.0, 2.0]]),
+  );
+
+  // ...    
+}
+```
+
 <h4 style="margin-bottom:0;">First Hours into Learning Rust</h4>
 <p style="margin-top:0; font-size:0.85em;">
   <em>2026-06-11 · Rust Learning Day 1</em>
