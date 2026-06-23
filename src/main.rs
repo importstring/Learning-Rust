@@ -123,6 +123,8 @@ impl Solution {
         */
 
         let dW = 
+        let db = 
+        let dX = 
 
         DenseGrads {
             dW: vec![],

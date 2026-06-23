@@ -130,9 +130,22 @@ impl Solution {
         dy: Vec<Vec<f32>>,
     ) -> (Vec<Vec<f32>>, Vec<Vec<f32>>, Vec<f32>) {
         let batch = x.len();
-        let in_dim = x[0].len();
         let out_dim = w[0].len();
-           
+
+        let wt = transpose(&w);
+        let xt = transpose(&x);
+
+        let dx = matmul(&dy, &wt);
+        let dw = matmul(&xt, &dy);
+
+        let mut db = vec![0.0; out_dim];
+        for i in 0..batch {
+            for j in 0..out_dim {
+                db[j] += dy[i][j];
+            }
+        }
+
+        (dx, dw, db)
     }
 }
 
