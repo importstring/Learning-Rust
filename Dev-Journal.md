@@ -1,4 +1,5 @@
-### 📌 Pinned Entry 
+### 📌 Pinned Entry
+
 <h4 style="margin-bottom:0;">First Weeks into Learning Rust</h4>
 <p style="margin-top:0; font-size:0.85em;">
   <em>2026-06-22 · Rust Learning week 3</em>
@@ -23,7 +24,7 @@ pub fn dense_forward(
     if x.is_empty() || w.is_empty() || b.is_empty() {
         return None;
     }
-    
+
     let z = Self::matmul(x, w);
     let z_b = Self::add_bias(z?, b);
     let y = Self::relu(z_b?);
@@ -46,7 +47,7 @@ fn main() {
       Some(vec![vec![1.0, 2.0]]),
   );
 
-  // ...    
+  // ...
 }
 ```
 
@@ -181,4 +182,44 @@ for (idx, &x) in nums.iter().skip(1).enumerate() {
 }
 ```
 
+<h4 style="margin-bottom:0;">Moving into Softmax</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-23 · Rust Learning week 4</em>
+</p>
 
+Softmax has kinda just been this mysterious function I'd call to turn this seemingly abitrary numbers into probablilities. Now I understand how it funcitons. It's really clean and also cool that it uses `e` a lot because that means the derative will be interesting to learn about later on down the road for maybe backprop.
+
+So for softmax, the problem I did was a row by row softmax calculation. I wrote a general function, and then this sub function:
+
+```Rust
+pub fn softmax_row(xs: &Vec<f32>) -> Vec<f32> {
+    let mut denominator = 0.0_f32;
+    let mut out = Vec::new();
+
+    for j in xs {
+        denominator += j.exp();
+    }
+
+    for i in xs {
+        out.push( i.exp() / denominator);
+    }
+
+    out
+}
+```
+
+I decided to calculate the denominator first because I realized that exponential equations can take up a lot of memory and down the road that will be a concern once the numbers are larger. Basically I pulled up Victor Zhou's amazing article and implemented in Rust. Super cool dude! Basically copied this equation.
+
+$$
+\mathrm{softmax}(x_i) = \frac{e^{x_i}}{\sum_{j=1}^n e^{x_j}}
+$$
+
+Other learnings:
+
+```Rust
+Vec::new(); // I'm prefering this over vec![]; currently
+for row in &matrix { ... } // because row inherits the val from matrix
+// it must be borrowed instead of just for row in matrix
+let x = 43.32_f32; // Learned that I can just do _f32 and it's pretty
+
+```
