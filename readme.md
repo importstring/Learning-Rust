@@ -6,4 +6,6 @@ My final challenge will be building a neural network and I'll be working up to i
 
 The plan is to turn this into this very helpful environment with hints and syntax suggestions and links to Kaggle and Leatcode to make learning Rust more fun.
 
+I'm working in `src/solutions/nn` right now! 
+
 Follow along and star!
