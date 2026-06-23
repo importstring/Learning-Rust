@@ -122,6 +122,10 @@ impl Solution {
         We'll try without first and then I'll update this later. Then later on I'll update my dev journal.
         */
 
+        // So I had no idea that
+        // X^T meant transpose X
+        // now things are making sense
+
         let dW = 
         let db = 
         let dX = 
