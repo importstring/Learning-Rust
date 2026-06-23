@@ -114,6 +114,16 @@ impl Solution {
         // - use your existing transpose + matmul helpers, OR
         // - write the loops directly here.
 
+        /* Action plan
+        Let's do it this way. We're going to rebuild my old functions and maybe add some small tweaks based on my new learnings/preferences.
+
+        This time around, I'm not going to delete the hints because I think they are going to be kinda necessary.
+        
+        We'll try without first and then I'll update this later. Then later on I'll update my dev journal.
+        */
+
+        let dW = 
+
         DenseGrads {
             dW: vec![],
             db: vec![],
