@@ -76,45 +76,19 @@ struct Solution;
 
 
 impl Solution {
-    pub fn softmax_row(xs: &Vec<f32>) -> Vec<f32> {
-        let mut denominator = 0.0_f32;
-        let mut out = Vec::new();
+    pub fn softmax_row(row: &[f32]) -> Vec<f32> {
+        let denominator: f32 = row.iter().map(|x| x.exp()).sum();
 
-        for j in xs {
-            denominator += j.exp();
-        }
-
-        for i in xs {
-            out.push( i.exp() / denominator);
-        }
-
-        out
+        row.iter()
+            .map(|x| x.exp() / denominator)
+            .collect()
     }
 
     pub fn softmax(matrix: Vec<Vec<f32>>) -> Vec<Vec<f32>> {
-        if matrix.is_empty() {
-            return Vec::new();
-        }
-
-        // Something to do with e^x[i] over something
-        // then that's all over the sum of all values in x 
-        // so the (e^x[i]) / (for j in 0..e^x[j] 
-        // and j must be almost like the flattened version of the matrix 
-        // because it doesn't matter the location
-        // so what's step one? calculate the denomenator
-        //  let mut denominator = 0.0_f32;
-        // commented out cos it's gonna be it in the new function
-
-        // Let's also add an output vector
-        let mut out: Vec<Vec<f32>> = Vec::new();
-
-        // I've made a softmax row function because it's by row
-        for row in &matrix {
-            let probs = Self::softmax_row(row);
-            out.push(probs);
-        }
-
-        out
+        matrix
+            .iter()
+            .map(|row| Self::softmax_row(row))
+            .collect()
     }
 }
 
