@@ -100,6 +100,74 @@ pub struct DenseGrads {
 
 
 impl Solution {
+    pub fn transpose(matrix: Vec<Vec<f32>>) -> Vec<Vec<f32>> {
+
+        if matrix.is_empty() {
+            return vec![];
+        }
+
+        let rows = matrix.len();
+        let cols = matrix[0].len();
+        
+        let mut result = vec![vec![0.0; rows]; cols];
+
+        for (idx, row) in matrix.iter().enumerate() {
+            for (c_idx, &num) in row.iter().enumerate() {
+                result[c_idx][idx] = num;
+            }
+        }
+
+        result
+    }
+
+        pub fn matmul(a: Vec<Vec<f32>>, b: Vec<Vec<f32>>) -> Option<Vec<Vec<f32>>> {
+        if a.is_empty() || b.is_empty() {
+            return None;
+        }
+
+        // check rectangular
+        let a_cols = a[0].len();
+        if a_cols == 0 {
+            return None;
+        }
+        for row in &a {
+            if row.len() != a_cols {
+                return None;
+            }
+        }
+
+        let b_rows = b.len();
+        let b_cols = b[0].len();
+        if b_cols == 0 {
+            return None;
+        }
+        for row in &b {
+            if row.len() != b_cols {
+                return None;
+            }
+        }
+
+        // shape rule
+        if a_cols != b_rows {
+            return None;
+        }
+
+        let a_rows = a.len();
+        let mut result = vec![vec![0.0; b_cols]; a_rows];
+
+        for i in 0..a_rows {
+            for j in 0..b_cols {
+                let mut sum = 0.0;
+                for k in 0..a_cols {
+                    sum += a[i][k] * b[k][j];
+                }
+                result[i][j] = sum;
+            }
+        }
+
+        Some(result)
+    }    
+
     pub fn dense_backward(
         x: Vec<Vec<f32>>,      // (B x I)
         w: Vec<Vec<f32>>,      // (I x O)
