@@ -67,12 +67,15 @@ struct Solution;
 impl Solution {
     pub fn sigmoid(matrix: Vec<Vec<f32>>) -> Vec<Vec<f32>> {
         if matrix.is_empty() {
-          return [].to_vec();
+          return vec![];
         }
+
         let mut out: Vec<Vec<f32>> = matrix.clone();
         
         for i in 0..out.len() {
-            for j in 0..out[0].len() {
+            let cols = out[i].len();
+
+            for j in 0..cols {
                 out[i][j] = 1.0 / ( 1.0 + ( -matrix[i][j] ).exp() ) ;
             }
         }
