@@ -9,3 +9,4 @@ The plan is to turn this into this very helpful environment with hints and synta
 I'm working in `src/solutions/nn` right now! 
 
 Follow along and star!
+--> can find the dev journal in root
