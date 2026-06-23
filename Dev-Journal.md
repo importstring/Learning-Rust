@@ -1,3 +1,18 @@
+# Pinned Entry:
+<h4 style="margin-bottom:0;">First Weeks into Learning Rust</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-22 · Rust Learning week 3</em>
+</p>
+
+I've been working on MSE, matrix multiplication, dot products, relu, and then working that together to create a super simply feed forward network.
+
+Basically I'm building myself up from the basics so that I have a strong understanding of how everything works.
+
+It worked super nicely because I'd build in the bias function, the ReLu, and dot products and then on the very next mini challenge, use my old code for the new problem.
+
+How I've been learning thusfar:
+I've been leaning on AI to roadmap my progression from skillset to skillset and have it generate LeatCode style files for me to build ML stuff. It's been working great but I'm hoping I can reach out to someone more senior for some guidance on how they'd go from here.
+
 <h4 style="margin-bottom:0;">First Hours into Learning Rust</h4>
 <p style="margin-top:0; font-size:0.85em;">
   <em>2026-06-11 · Rust Learning Day 1</em>
@@ -129,16 +144,4 @@ for (idx, &x) in nums.iter().skip(1).enumerate() {
 }
 ```
 
-<h4 style="margin-bottom:0;">First Weeks into Learning Rust</h4>
-<p style="margin-top:0; font-size:0.85em;">
-  <em>2026-06-22 · Rust Learning week 3</em>
-</p>
 
-I've been working on MSE, matrix multiplication, dot products, relu, and then working that together to create a super simply feed forward network.
-
-Basically I'm building myself up from the basics so that I have a strong understanding of how everything works.
-
-It worked super nicely because I'd build in the bias function, the ReLu, and dot products and then on the very next mini challenge, use my old code for the new problem.
-
-How I've been learning thusfar:
-I've been leaning on AI to roadmap my progression from skillset to skillset and have it generate LeatCode style files for me to build ML stuff. It's been working great but I'm hoping I can reach out to someone more senior for some guidance on how they'd go from here.
