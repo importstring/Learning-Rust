@@ -129,4 +129,15 @@ for (idx, &x) in nums.iter().skip(1).enumerate() {
 }
 ```
 
-— just a draft until I write this out tonight
+<h4 style="margin-bottom:0;">First Weeks into Learning Rust</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-22 · Rust Learning week 3</em>
+</p>
+
+So it's been a while since I've written a dev journal and I've gone relatively silent for a few days now. Just been super busy with exams, catching up with friends before we all head our speerate ways, and doing doctors appoinments before I leave for my cottage.
+
+I've been working on MSE, matrix multiplication, dot products, relu, and then working that together to create a super simply feed forward network.
+
+Basically I'm building myself up from the basics so that I have a strong understanding of how everything works.
+
+It worked super nicely because I'd build in the bias function, the reulu, and dot products and then on the very next mini challenge, use my old code for the new problem.
