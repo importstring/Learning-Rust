@@ -1,6 +1,6 @@
 /*
-NN Step 10. Sigmoid Activation
-[src/solutions/nn/10-Sigmoid.rs]
+NN Step 9. Sigmoid Activation
+[src/solutions/nn/09-Sigmoid.rs]
 
 
 Goal:
