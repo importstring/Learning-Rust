@@ -271,7 +271,58 @@ impl Solution {
         // 6. Return:
         //      Some(DenseGrads { dW, db, dX })
 
-        unimplemented!()
+        if x.is_empty() || w.is_empty() || dL_dZ.is_empty() {
+            return None;
+        }
+
+        let x_cols = x[0].len();
+        let w_cols = w[0].len();
+        let dz_cols = dL_dZ[0].len();
+
+        for row in &x {
+            if row.len() != x_cols {
+                return None;
+            }
+        }
+
+        for row in &w {
+            if row.len() != w_cols {
+                return None;
+            }
+        }
+
+        for row in &dL_dZ {
+            if row.len() != dz_cols {
+                return None;
+            }
+        }
+
+        if x.len() != dL_dZ.len() {
+            return None;
+        }
+
+        if w_cols != dz_cols {
+            return None;
+        }
+
+        if x_cols != w.len() {
+            return None;
+        }
+
+        let dW = Self::matmul(Self::transpose(x), dL_dZ);
+        let dX = Self::matmul(dL_dZ, Self::transpose(w));
+
+        let rows = dL_dZ.len();
+        let cols = dL_dZ[0].len();
+        let mut db = Vec::new();
+
+        for i in 0..rows {
+            for j in 0..cols {
+                db[i] += dL_dZ[i][j];
+            }
+        }
+
+        Some(DenseGrads { dW, db, dX} )
     }
 }
 
