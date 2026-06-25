@@ -89,14 +89,28 @@ impl Solution {
         input: Vec<Vec<f32>>,
         dL_dOut: Vec<Vec<f32>>,
     ) -> Option<Vec<Vec<f32>>> {
-        // TODO: implement
-        //
-        // For each element:
-        // - if input[i][j] > 0.0, keep dL_dOut[i][j]
-        // - otherwise, write 0.0
-        //
-        // Return None if shapes do not match.
-        unimplemented!()
+
+        if input.is_empty() {
+            return None;
+        }
+
+        let rows = input.len();
+        let cols = if rows > 0 { input[0].len() } else { 0 };
+        let mut out = vec![vec![0.0; cols]; rows];
+        
+        for i in 0..rows {
+            for j in 0..cols {
+                if input[i][j] > 0.0 {
+                    out[i][j] = dL_dOut[i][j];
+                }
+                else {
+                    out[i][j] = 0.0;
+                }
+            }
+        }
+
+        Some(out)
+        
     }
 }
 
