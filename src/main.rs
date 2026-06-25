@@ -172,10 +172,6 @@ pub struct DenseGrads {
 
 impl Solution {
     pub fn transpose(matrix: Vec<Vec<f32>>) -> Vec<Vec<f32>> {
-        if matrix.is_empty() {
-            return vec![];
-        }
-
 
         let rows = matrix.len();
         let cols = matrix[0].len();
@@ -193,36 +189,12 @@ impl Solution {
     }
 
 
-    pub fn matmul(a: Vec<Vec<f32>>, b: Vec<Vec<f32>>) -> Option<Vec<Vec<f32>>> {
-        if a.is_empty() || b.is_empty() {
-            return None;
-        }
-
+    pub fn matmul(a: Vec<Vec<f32>>, b: Vec<Vec<f32>>) -> Vec<Vec<f32>> {
 
         let a_rows = a.len();
         let a_cols = a[0].len();
         let b_rows = b.len();
         let b_cols = b[0].len();
-
-
-        for row in &a {
-            if row.len() != a_cols {
-                return None;
-            }
-        }
-
-
-        for row in &b {
-            if row.len() != b_cols {
-                return None;
-            }
-        }
-
-
-        if a_cols != b_rows {
-            return None;
-        }
-
 
         let mut out = vec![vec![0.0; b_cols]; a_rows];
 
@@ -238,7 +210,7 @@ impl Solution {
         }
 
 
-        Some(out)
+        out
     }
 
 
@@ -309,12 +281,12 @@ impl Solution {
             return None;
         }
 
-        let dW = Self::matmul(Self::transpose(x), dL_dZ);
-        let dX = Self::matmul(dL_dZ, Self::transpose(w));
+        let dW = Self::matmul(Self::transpose(x), dL_dZ.clone());
+        let dX = Self::matmul(dL_dZ.clone(), Self::transpose(w));
 
         let rows = dL_dZ.len();
         let cols = dL_dZ[0].len();
-        let mut db = Vec::new();
+        let mut db = vec![0.0; cols];
 
         for i in 0..rows {
             for j in 0..cols {
