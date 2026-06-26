@@ -127,20 +127,61 @@ impl Solution {
         //
         // 1. Return None if:
         //    - w, b, dW, or db are empty
+
+        if w.is_empty() || b.is_empty() || dW.is_empty() || db.is_empty() {
+            return None;
+        }
+
         //    - w or dW are non-rectangular
+        
+        if w.len() >= w[0].len() || dW.len() >= dW[0].len() {
+            return None;
+        }
+
         //    - w and dW do not have the same shape
+
+        if w.len() != dW.len() {
+            return None;
+        }
+
         //    - b.len() != db.len()
+
+        if b.len() != db.len() {
+            return None;
+        }
+        
         //
         // 2. Compute:
         //      new_w[i][j] = w[i][j] - lr * dW[i][j]
+        
+        let rows = w.len();
+        let cols = w[0].len();
+        let mut new_w = vec![vec![0.0; cols]; rows];
+
+        for i in 0..rows {
+            for j in 0..cols {
+                new_w[i][j] = w[i][j] - lr * dW[i][j];
+            }
+        }
+
         //
         // 3. Compute:
         //      new_b[j] = b[j] - lr * db[j]
         //
+
+        let cols: usize = b.len();
+        let mut new_b = Vec::with_capacity(cols);
+
+        for j in 0..cols {
+            new_b[j] = b[j] - lr * db[j];
+        }
+
+        
         // 4. Return:
         //      Some(Params { w: new_w, b: new_b })
 
-        unimplemented!()
+        Some(Params { w: new_w, b: new_b })
+
     }
 }
 
