@@ -127,25 +127,31 @@ impl Solution {
         //
         // 1. Return None if:
         //    - w, b, dW, or db are empty
-
         if w.is_empty() || b.is_empty() || dW.is_empty() || db.is_empty() {
             return None;
         }
 
         //    - w or dW are non-rectangular
-        
-        if w.len() >= w[0].len() || dW.len() >= dW[0].len() {
+        let w_rows = w.len();
+        let w_cols = w[0].len();
+
+        if w.iter().any(|row| row.len() != w_cols) {
+            return None;
+        }
+
+        let dW_rows = dW.len();
+        let dW_cols = dW[0].len();
+
+        if dW.iter().any(|row| row.len() != dW_cols) {
             return None;
         }
 
         //    - w and dW do not have the same shape
-
-        if w.len() != dW.len() {
+        if w_rows != dW_rows || w_cols != dW_cols {
             return None;
         }
 
         //    - b.len() != db.len()
-
         if b.len() != db.len() {
             return None;
         }
@@ -173,7 +179,7 @@ impl Solution {
         let mut new_b = Vec::with_capacity(cols); // Add to journal
 
         for j in 0..cols {
-            new_b[j] = b[j] - lr * db[j];
+            new_b.push( b[j] - lr * db[j] ); // Add to journal later
         }
 
         
