@@ -170,7 +170,7 @@ impl Solution {
         //
 
         let cols: usize = b.len();
-        let mut new_b = Vec::with_capacity(cols);
+        let mut new_b = Vec::with_capacity(cols); // Add to journal
 
         for j in 0..cols {
             new_b[j] = b[j] - lr * db[j];
