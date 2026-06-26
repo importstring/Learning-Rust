@@ -224,3 +224,39 @@ for row in &matrix { ... } // because row inherits the val from matrix
 let x = 43.32_f32; // Learned that I can just do _f32 and it's pretty
 
 ```
+
+<h4 style="margin-bottom:0;">Moving into Softmax</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-26 · Rust Learning week 4</em>
+</p>
+
+I haven't updated this in a few days now. I've been networking and devleoping silently for a few days.
+
+I thought I'd write about `Vec::with_capacity();`. It makes code so much more readable.
+
+```Rust
+let cols: usize = b.len();
+let mut new_b = Vec::with_capacity(cols);
+
+for j in 0..cols {
+  new_b.push( b[j] - lr * db[j] );
+}
+
+// Instead of
+let cols = b.len();
+let mut new_b = vec![0.0; cols];
+
+for j in 0..cols {
+    new_b[j] = b[j] - lr * db[j];
+}
+
+```
+
+Personally I find the first version signficantly more readable.
+
+Also I ran into a few issues with the DenseBackward problem but I was able to fix most of them. Simple things like cloning variables.
+
+```Rust
+let dW = Self::matmul(Self::transpose(x), dL_dZ.clone());
+let dX = Self::matmul(dL_dZ.clone(), Self::transpose(w));
+```
