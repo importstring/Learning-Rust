@@ -176,10 +176,10 @@ impl Solution {
         //
 
         let cols: usize = b.len();
-        let mut new_b = Vec::with_capacity(cols); // Add to journal
+        let mut new_b = Vec::with_capacity(cols);
 
         for j in 0..cols {
-            new_b.push( b[j] - lr * db[j] ); // Add to journal later
+            new_b.push( b[j] - lr * db[j] ); 
         }
 
         
