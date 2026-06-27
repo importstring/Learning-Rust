@@ -204,37 +204,42 @@ impl Solution {
             b: 0.0,
         };
 
+        let mut db_sum = 0.0;
+        let mut dW_sum = vec![0.0; neuron.w.len()];
+
         // 3. For each epoch:
+        for i in 0..epochs {
         //    - Initialize accumulators: dW_sum (zeros), db_sum = 0.0
         //    - For each sample i:
         //        * let x = &xs[i]
         //        * let y = ys[i]
+            let idx = i % 3; // Add to dev journal as clean remainder usage
+            let x = &xs[idx]; // maybe referene old blackjack project
+            let y = ys[idx]; // and the guy who designs games who told me the trick
         //        * compute (dW_i, db_i) via neuron_gradients
+            let (dW, db) = neuron_gradients(&neuron, x, y);
         //        * accumulate:
         //            dW_sum[k] += dW_i[k]
         //            db_sum    += db_i
+            for k in 0..dW_i.len() {
+                dW_sum[k] += dW_i[k];
+            }
+            db_sum += db_i;
+
         //    - Optionally average:
         //        let n = xs.len() as f32;
+            let n = xs.len as f32;
         //        dW_avg[k] = dW_sum[k] / n;
+            let dW_avg[k] = dW_sum[k] / n;
         //        db_avg    = db_sum / n;
+            let db_avg = db_sum / n;
         //      (Check comments/tests if they want averaging or just sum.)
         //    - Call sgd_update_neuron(&mut neuron, &dW_avg, db_avg, lr)
         //
-
-        for i in 0..epochs {
-            let x = &xs[i];
-            let y = ys[i];
-
-
-
-            // compute (dw_i, db_i) via neuron_gradients?!?!
-
-            // something for dW some?
-
+            sgd_update_neuron(&mut neuron, &dW_avg, db_avg, lr);
         }
 
-        // something like sgd_update_neuron(&mut neuron, &dW_avg, db_avg, lr);
-
+        neuron
         // 4. Return trained neuron.
 
         // HINT 1: Make sure to reuse neuron_gradients and sgd_update_neuron.
