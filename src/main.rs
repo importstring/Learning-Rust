@@ -204,14 +204,14 @@ impl Solution {
             b: 0.0,
         };
 
-        let mut db_sum = 0.0;
-        let mut dW_sum = vec![0.0; neuron.w.len()];
-        
-        let mut dW_avg = vec![0.0; neuron.w.len()];
-
+    
         // 3. For each epoch:
         for i in 0..epochs {
         //    - Initialize accumulators: dW_sum (zeros), db_sum = 0.0
+            let mut db_sum = 0.0;
+            let mut dW_sum = vec![0.0; neuron.w.len()];
+            let mut dW_avg = vec![0.0; neuron.w.len()];
+            
         //    - For each sample i:
         //        * let x = &xs[i]
         //        * let y = ys[i]
@@ -241,12 +241,13 @@ impl Solution {
             sgd_update_neuron(&mut neuron, &dW_avg, db_avg, lr);
         }
 
-        neuron
         // 4. Return trained neuron.
 
         // HINT 1: Make sure to reuse neuron_gradients and sgd_update_neuron.
         // HINT 2: Be careful with ownership: xs, ys are owned here; refer to them via &xs, &ys inside loops.
         // HINT 3: This is where you practice all previous steps: dot product, loss, gradients, SGD.
+
+        neuron
     }
 }
 
