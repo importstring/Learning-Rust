@@ -204,48 +204,32 @@ impl Solution {
             b: 0.0,
         };
 
-    
-        // 3. For each epoch:
-        for i in 0..epochs {
-        //    - Initialize accumulators: dW_sum (zeros), db_sum = 0.0
+        let n = xs.len() as f32;
+
+        for epoch in 0..epochs {
             let mut db_sum = 0.0;
-            let mut dW_sum = vec![0.0; neuron.w.len()];
-            let mut dW_avg = vec![0.0; neuron.w.len()];
-            
-        //    - For each sample i:
-        //        * let x = &xs[i]
-        //        * let y = ys[i]
-            let idx = i % 3; // Add to dev journal as clean remainder usage
-            let x = &xs[idx]; // maybe referene old blackjack project
-            let y = ys[idx]; // and the guy who designs games who told me the trick
-        //        * compute (dW_i, db_i) via neuron_gradients
-            let (dW_i, db_i) = neuron_gradients(&neuron, x, y);
-        //        * accumulate:
-        //            dW_sum[k] += dW_i[k]
-        //            db_sum    += db_i
-            for k in 0..dW_i.len() {
-                dW_sum[k] += dW_i[k];
+            let mut dW_sum = vec![0.0; xs.len()];
+
+            for i in 0..xs.len() {
+                let x = &xs[i];
+                let y = &ys[i];
+
+                let (dW_i, db_i) = neuron_gradients(&neuron, x, y);
+
+                let mut dW_avg = vec![0.0; dW_i.len()];
+                for k in 0..dW_i.len() {
+                    dW_sum[k] += dW_i[k];
+                    dW_avg[k] = dW_sum[k] / n;
+                }
+
+                db_sum += db_i;
+
+                let db_avg = db_sum / n;
             }
-            db_sum += db_i;
 
-        //    - Optionally average:
-        //        let n = xs.len() as f32;
-            let n = xs.len() as f32;
-        //        dW_avg[k] = dW_sum[k] / n;
-            dW_avg[k] = dW_sum[k] / n;
-        //        db_avg    = db_sum / n;
-            let db_avg = db_sum / n;
-        //      (Check comments/tests if they want averaging or just sum.)
-        //    - Call sgd_update_neuron(&mut neuron, &dW_avg, db_avg, lr)
-        //
-            sgd_update_neuron(&mut neuron, &dW_avg, db_avg, lr);
+            sgd_update_neuron(&mut neuron, dW_avg, db_avg, lr);       
+            
         }
-
-        // 4. Return trained neuron.
-
-        // HINT 1: Make sure to reuse neuron_gradients and sgd_update_neuron.
-        // HINT 2: Be careful with ownership: xs, ys are owned here; refer to them via &xs, &ys inside loops.
-        // HINT 3: This is where you practice all previous steps: dot product, loss, gradients, SGD.
 
         neuron
     }
