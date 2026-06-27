@@ -206,6 +206,8 @@ impl Solution {
 
         let mut db_sum = 0.0;
         let mut dW_sum = vec![0.0; neuron.w.len()];
+        
+        let mut dW_avg = vec![0.0; neuron.w.len()];
 
         // 3. For each epoch:
         for i in 0..epochs {
@@ -228,9 +230,9 @@ impl Solution {
 
         //    - Optionally average:
         //        let n = xs.len() as f32;
-            let n = xs.len as f32;
+            let n = xs.len() as f32;
         //        dW_avg[k] = dW_sum[k] / n;
-            let dW_avg[k] = dW_sum[k] / n;
+            dW_avg[k] = dW_sum[k] / n;
         //        db_avg    = db_sum / n;
             let db_avg = db_sum / n;
         //      (Check comments/tests if they want averaging or just sum.)
