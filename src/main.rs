@@ -206,29 +206,31 @@ impl Solution {
 
         let n = xs.len() as f32;
 
-        for epoch in 0..epochs {
+        for _ in 0..epochs {
             let mut db_sum = 0.0;
-            let mut dW_sum = vec![0.0; xs.len()];
+            let mut dW_sum = vec![0.0; neuron.w.len()];
 
             for i in 0..xs.len() {
                 let x = &xs[i];
-                let y = &ys[i];
+                let y = ys[i];
 
                 let (dW_i, db_i) = neuron_gradients(&neuron, x, y);
 
-                let mut dW_avg = vec![0.0; dW_i.len()];
                 for k in 0..dW_i.len() {
                     dW_sum[k] += dW_i[k];
-                    dW_avg[k] = dW_sum[k] / n;
                 }
 
                 db_sum += db_i;
-
-                let db_avg = db_sum / n;
             }
-
-            sgd_update_neuron(&mut neuron, dW_avg, db_avg, lr);       
             
+            let mut dW_avg = vec![0.0; neuron.w.len()];
+            for k in 0..neuron.w.len() {
+                dW_avg[k] = dW_sum[k] / n;
+            }
+            let db_avg = db_sum / n;
+
+            sgd_update_neuron(&mut neuron, &dW_avg, db_avg, lr);       
+
         }
 
         neuron
