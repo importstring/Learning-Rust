@@ -88,7 +88,7 @@ impl Neuron {
 
         let mut z = 0.0;
         for k in 0..cols {
-            z += x[k] * self.w[k]
+            z += x[k] * self.w[k];
         }
 
         z + self.b        
@@ -109,7 +109,7 @@ pub fn loss_mse(y_hat: f32, y: f32) -> f32 {
     // let e = y_hat - y;
     // 0.5 * e * e
 
-    let error = y_hat - y
+    let error = y_hat - y;
     0.5 * (error) * (error)
 }
 
@@ -133,8 +133,16 @@ pub fn neuron_gradients(
     //     dW[k] = diff * x[k];
     // }
     // let db = diff;
+    let y_hat = neuron.forward(x);
+    let diff = y_hat - y;
+    let mut dW = vec![0.0; neuron.w.len()];
+    for k in 0..neuron.w.len() {
+        dW[k] = diff * x[k];
+    }
 
+    let db = diff;
 
+    (dW, db)
 }
 
 
@@ -154,7 +162,11 @@ pub fn sgd_update_neuron(
     // HINT 2: Update bias: neuron.b = neuron.b - lr * db.
     // HINT 3: Make sure dW.len() == neuron.w.len() (tests should ensure this).
 
-    unimplemented!()
+    for k in 0..neuron.w.len() {
+        neuron.w[k] = neuron.w[k] - lr * dW[k];
+    }
+
+    neuron.b = neuron.b - lr * db;
 }
 
 
@@ -187,8 +199,10 @@ impl Solution {
         //    - b = 0.0
         //
 
-        let w = vec![0.0; input_dim];
-        let b = 0.0
+        let mut neuron = Neuron {
+            w: vec![0.0; xs[0].len()],
+            b: 0.0,
+        };
 
         // 3. For each epoch:
         //    - Initialize accumulators: dW_sum (zeros), db_sum = 0.0
@@ -210,6 +224,8 @@ impl Solution {
         for i in 0..epochs {
             let x = &xs[i];
             let y = ys[i];
+
+
 
             // compute (dw_i, db_i) via neuron_gradients?!?!
 

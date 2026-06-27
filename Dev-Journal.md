@@ -225,7 +225,7 @@ let x = 43.32_f32; // Learned that I can just do _f32 and it's pretty
 
 ```
 
-<h4 style="margin-bottom:0;">Moving into Softmax</h4>
+<h4 style="margin-bottom:0;">`with_capacity`</h4>
 <p style="margin-top:0; font-size:0.85em;">
   <em>2026-06-26 · Rust Learning week 4</em>
 </p>
@@ -259,4 +259,39 @@ Also I ran into a few issues with the DenseBackward problem but I was able to fi
 ```Rust
 let dW = Self::matmul(Self::transpose(x), dL_dZ.clone());
 let dX = Self::matmul(dL_dZ.clone(), Self::transpose(w));
+```
+
+<h4 style="margin-bottom:0;">Some updates on how I'm learning</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-27 · Rust Learning week 4</em>
+</p>
+
+I've really been leveraging AI to learn Rust very quickly. I want to do something like for example create an instance using the attributes from a class and call functions inside a different class and using this example I can easily translate the code into what it'd look like in mine.
+
+```Rust
+struct Car {
+    color: String,
+    brand: String,
+    year: u32,
+}
+
+impl Car {
+    fn honk(&self, emotion: &str) {
+        println!("The {} {} car honks {}!", self.color, self.brand, emotion);
+    }
+}
+
+fn main() {
+    let car = Car {
+        color: String::from("red"),
+        brand: String::from("Toyota"),
+        year: 2020,
+    };
+
+    println!("Car color: {}", car.color);
+    println!("Car year: {}", car.year);
+
+    car.honk("angrily");
+    car.honk("happily");
+}
 ```
