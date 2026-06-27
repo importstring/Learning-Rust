@@ -217,7 +217,7 @@ impl Solution {
             let x = &xs[idx]; // maybe referene old blackjack project
             let y = ys[idx]; // and the guy who designs games who told me the trick
         //        * compute (dW_i, db_i) via neuron_gradients
-            let (dW, db) = neuron_gradients(&neuron, x, y);
+            let (dW_i, db_i) = neuron_gradients(&neuron, x, y);
         //        * accumulate:
         //            dW_sum[k] += dW_i[k]
         //            db_sum    += db_i
