@@ -85,7 +85,13 @@ impl Neuron {
         // z + self.b
 
         let cols = x.len();
-        
+
+        let mut z = 0.0;
+        for k in 0..cols {
+            z += x[k] * self.w[k]
+        }
+
+        z + self.b        
     }
 }
 
@@ -103,7 +109,8 @@ pub fn loss_mse(y_hat: f32, y: f32) -> f32 {
     // let e = y_hat - y;
     // 0.5 * e * e
 
-    unimplemented!()
+    let error = y_hat - y
+    0.5 * (error) * (error)
 }
 
 
@@ -127,7 +134,7 @@ pub fn neuron_gradients(
     // }
     // let db = diff;
 
-    unimplemented!()
+
 }
 
 
