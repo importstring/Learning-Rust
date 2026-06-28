@@ -19,7 +19,6 @@ A dense layer is the first true “multi-neuron” building block.
 It takes an input vector x of dimension D and produces
 an output vector y_hat of dimension O.
 
-
 This step makes you rebuild several earlier pieces together:
 - matrix multiplication
 - adding bias
@@ -106,103 +105,45 @@ pub struct DenseLayer {
 
 
 /// Hints:
-/// 1) You already did matrix multiplication earlier; this is the same idea,
-///    except x is a single row vector and W is D x O.
-/// 2) Output length is O = W[0].len().
-/// 3) For each output column j, sum x[i] * W[i][j] over i, then add b[j].
+/// 1) Reuse your earlier dense forward idea, but now think row-vector times matrix.
+/// 2) Output length is O.
+/// 3) Each output coordinate depends on all input coordinates.
 impl DenseLayer {
     pub fn forward(&self, x: &[f32]) -> Vec<f32> {
         // TODO: compute y_hat = xW + b
-        //
-        // HARD HINT 1:
-        // If x has length D and W has shape D x O,
-        // then y_hat must have length O.
-        //
-        // HARD HINT 2:
-        // This is NOT W*x in the column-vector sense used in some textbooks.
-        // Use the convention already implied by your earlier dense forward work:
-        // output[j] depends on all input coordinates i.
-        //
-        // HARD HINT 3:
-        // Skeleton:
-        // let out_dim = self.b.len();
-        // let mut out = vec![0.0; out_dim];
-        // for j in 0..out_dim {
-        //     let mut z = 0.0;
-        //     for i in 0..x.len() {
-        //         z += x[i] * self.w[i][j];
-        //     }
-        //     out[j] = z + self.b[j];
-        // }
-        // out
     }
 }
 
 
 
 /// Hints:
-/// 1) This is scalar MSE extended over a vector output.
-/// 2) Sum over output coordinates j.
-/// 3) Keep the 0.5 so the derivative stays clean.
+/// 1) This is scalar MSE repeated across output coordinates.
+/// 2) Keep the 0.5 factor.
+/// 3) Be careful not to average twice unless the problem explicitly wants that.
 pub fn loss_mse_vec(y_hat: &[f32], y: &[f32]) -> f32 {
     // TODO: compute vector MSE loss
-    //
-    // HARD HINT 1:
-    // You are summing scalar losses:
-    // 0.5 * (y_hat[j] - y[j])^2
-    //
-    // HARD HINT 2:
-    // Do NOT divide by output dimension unless the tests/comments require it.
-    // This step is probably using "sum over outputs" for one sample,
-    // then averaging across samples in the training loop.
-    //
-    // HARD HINT 3:
-    // Start with:
-    // let mut loss = 0.0;
-    // for j in 0..y.len() {
-    //     let diff = y_hat[j] - y[j];
-    //     loss += 0.5 * diff * diff;
-    // }
-    // loss
 }
 
 
 
 /// Hints:
-/// 1) For one sample, compute dW and db for the entire dense layer.
-/// 2) Reuse the fact that dL/dy_hat[j] = y_hat[j] - y[j].
-/// 3) Each weight W[i][j] connects x[i] to output j.
+/// 1) Start from diff[j] = y_hat[j] - y[j].
+/// 2) db is the output-side gradient itself.
+/// 3) dW is an outer-product-shaped object with the same shape as W.
 pub fn dense_gradients(
     layer: &DenseLayer,
     x: &[f32],
     y: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
     // TODO: compute per-sample dW and db
-    //
-    // HARD HINT 1:
-    // First get y_hat by calling forward.
-    // Then diff[j] = y_hat[j] - y[j].
-    //
-    // HARD HINT 2:
-    // db is just diff.
-    //
-    // HARD HINT 3:
-    // dW has the same shape as W.
-    // For every input coordinate i and output coordinate j:
-    // dW[i][j] = x[i] * diff[j]
-    //
-    // HARD HINT 4:
-    // This is the outer product:
-    // x (length D)  outer  diff (length O)
-    // producing a D x O matrix.
 }
 
 
 
 /// Hints:
-/// 1) This is Step 14 again, but now for a full dense layer.
-/// 2) W and dW have the same shape, b and db have the same length.
-/// 3) Update every parameter independently.
+/// 1) This is Step 14 again, but over all weights and all biases in the layer.
+/// 2) Parameter shapes and gradient shapes must match.
+/// 3) Every parameter updates independently by subtracting lr times its gradient.
 pub fn sgd_update_dense(
     layer: &mut DenseLayer,
     dW: &[Vec<f32>],
@@ -210,27 +151,14 @@ pub fn sgd_update_dense(
     lr: f32,
 ) {
     // TODO: apply SGD update to W and b
-    //
-    // HARD HINT 1:
-    // For every i, j:
-    // layer.w[i][j] -= lr * dW[i][j]
-    //
-    // HARD HINT 2:
-    // For every j:
-    // layer.b[j] -= lr * db[j]
-    //
-    // HARD HINT 3:
-    // If your earlier Step 14 took ownership and returned a new Params,
-    // this one is the in-place version for convenience.
 }
 
 
 
 /// Hints:
-/// 1) This is Step 15 generalized from one output to many outputs.
-/// 2) Initialize W as zeros of shape D x O and b as zeros of shape O.
-/// 3) Accumulate matrix gradients dW_sum and vector gradients db_sum
-///    over the whole dataset, then average, then update.
+/// 1) This is Step 15 generalized from scalar output to vector output.
+/// 2) Keep your attention on shapes: inputs are N x D, targets are N x O.
+/// 3) The epoch structure is the same as before: accumulate, average, update.
 impl Solution {
     pub fn train_dense_layer(
         xs: Vec<Vec<f32>>, // shape: N x D
@@ -239,47 +167,6 @@ impl Solution {
         epochs: usize,
     ) -> DenseLayer {
         // TODO: implement full dense-layer training loop
-        //
-        // HARD HINT 1:
-        // Input dimension:
-        // let in_dim = xs[0].len();
-        //
-        // Output dimension:
-        // let out_dim = ys[0].len();
-        //
-        // HARD HINT 2:
-        // Initialize:
-        // w = vec![vec![0.0; out_dim]; in_dim]
-        // b = vec![0.0; out_dim]
-        //
-        // HARD HINT 3:
-        // For each epoch:
-        //   dW_sum shape = in_dim x out_dim
-        //   db_sum shape = out_dim
-        //
-        // HARD HINT 4:
-        // For each sample i:
-        //   x = &xs[i]
-        //   y = &ys[i]
-        //   let (dW_i, db_i) = dense_gradients(&layer, x, y);
-        //   accumulate into dW_sum and db_sum
-        //
-        // HARD HINT 5:
-        // Average by N before updating.
-        // Exactly like Step 15, but now:
-        //   dW_avg[i][j] = dW_sum[i][j] / N
-        //   db_avg[j]    = db_sum[j] / N
-        //
-        // HARD HINT 6:
-        // Then call sgd_update_dense(&mut layer, &dW_avg, &db_avg, lr)
-        //
-        // HARD HINT 7:
-        // If you get shape confusion, write these on paper:
-        // x:      D
-        // y_hat:  O
-        // diff:   O
-        // dW:     D x O
-        // db:     O
     }
 }
 
@@ -344,7 +231,6 @@ impl DemoSummary {
         }
     }
 
-
     fn all_passed(&self) -> bool {
         self.passed == self.shown
     }
@@ -361,43 +247,36 @@ impl Runner {
         println!("{BOLD}{MAGENTA}============================={RESET}");
     }
 
-
     fn status_label(passed: bool) -> &'static str {
         if passed { "PASS" } else { "FAIL" }
     }
-
 
     fn status_color(passed: bool) -> &'static str {
         if passed { GREEN } else { RED }
     }
 
-
     fn vector_max_abs_error(a: &[f32], b: &[f32]) -> f32 {
         // TODO: return max_j |a[j] - b[j]|
         //
-        // HARD HINT:
-        // Track the maximum absolute coordinate error across the output vector.
-        // Start from 0.0 and update with max().
+        // Hint:
+        // This is a worst-coordinate error, not an average.
     }
-
 
     fn vector_mean_abs_error(a: &[f32], b: &[f32]) -> f32 {
         // TODO: return mean_j |a[j] - b[j]|
         //
-        // HARD HINT:
-        // Sum absolute coordinate errors, then divide by vector length.
+        // Hint:
+        // This is the average absolute coordinate error.
     }
-
 
     fn build_two_output_linear_dataset(n: usize) -> Dataset {
         // TODO:
         // x has shape [1]
         // y = [2x + 1, -x + 0.5]
         //
-        // HARD HINT:
-        // This is the cleanest "multi-neuron but still linear" test.
+        // Hint:
+        // This should be exactly learnable by one dense layer.
     }
-
 
     fn build_two_input_two_output_affine_dataset(n: usize) -> Dataset {
         // TODO:
@@ -407,11 +286,9 @@ impl Runner {
         //   x1 + 2x2 - 1.0,
         // ]
         //
-        // HARD HINT:
-        // This is the true dense-layer demo:
-        // multiple inputs, multiple outputs, all affine.
+        // Hint:
+        // This is also exactly learnable by one dense layer.
     }
-
 
     fn build_cases(n_train: usize) -> Vec<DemoCase> {
         vec![
@@ -428,10 +305,8 @@ impl Runner {
         ]
     }
 
-
     fn run_case(case: DemoCase, config: &RunConfig) -> DemoSummary {
         Self::print_banner(case.title);
-
 
         let (xs, ys) = case.dataset;
         let layer = Solution::train_dense_layer(
@@ -441,17 +316,14 @@ impl Runner {
             config.epochs,
         );
 
-
         println!();
         println!("{BOLD}{GREEN}✔ Training complete{RESET}");
         println!("{BOLD}Learned parameters:{RESET}");
         println!("  W = {:?}", layer.w);
         println!("  b = {:?}", layer.b);
 
-
         println!();
         println!("{BOLD}{YELLOW}Prediction test cases:{RESET}");
-
 
         let n = xs.len();
         let step = if config.n_show == 0 {
@@ -460,32 +332,26 @@ impl Runner {
             (n.max(1) / config.n_show.max(1)).max(1)
         };
 
-
         let mut shown = 0usize;
         let mut i = 0usize;
         let mut passed = 0usize;
         let mut total_error = 0.0f32;
 
-
         while i < n && shown < config.n_show {
             thread::sleep(Duration::from_millis(config.delay_ms));
-
 
             let x = &xs[i];
             let y_true = &ys[i];
             let y_hat = layer.forward(x);
 
-
             let max_err = Self::vector_max_abs_error(&y_hat, y_true);
             let mean_err = Self::vector_mean_abs_error(&y_hat, y_true);
             let is_pass = max_err <= case.tolerance;
-
 
             if is_pass {
                 passed += 1;
             }
             total_error += mean_err;
-
 
             println!(
                 "  Test {:>2}: {}{}{}  x = {:?}, y_true = {:?}, y_hat = {:?}, max_err = {:>8.4}, mean_err = {:>8.4}",
@@ -500,11 +366,9 @@ impl Runner {
                 mean_err
             );
 
-
             shown += 1;
             i += step;
         }
-
 
         let score = if shown > 0 {
             100.0 * passed as f32 / shown as f32
@@ -512,13 +376,11 @@ impl Runner {
             0.0
         };
 
-
         let mae = if shown > 0 {
             total_error / shown as f32
         } else {
             0.0
         };
-
 
         let summary = DemoSummary {
             title: case.title.to_string(),
@@ -528,14 +390,12 @@ impl Runner {
             score,
         };
 
-
         let summary_color = Self::status_color(summary.all_passed());
         let summary_label = if summary.all_passed() {
             "ALL PASSED"
         } else {
             "SOME FAILED"
         };
-
 
         println!();
         println!(
@@ -550,20 +410,15 @@ impl Runner {
         println!("  Mean MAE:  {:>5.4}", summary.mae);
         println!();
 
-
         summary
     }
-
 
     fn print_overall_summary(summaries: &[DemoSummary]) {
         // TODO: aggregate overall score/MAE across cases
         //
-        // HARD HINT:
-        // This is the same pattern you already wrote in Step 15.
-        // Sum scores, MAEs, passes, and shown counts across summaries.
-        // Then average score and MAE over number of cases.
+        // Hint:
+        // Same aggregation pattern as the previous runner.
     }
-
 
     fn print_runner_notes() {
         println!("{BOLD}{YELLOW}Notes:{RESET}");
@@ -584,23 +439,19 @@ impl Runner {
         println!();
     }
 
-
     fn run(config: RunConfig) {
         Self::print_banner("NN Runner: Train One Dense Layer");
         println!("Each prediction below is treated like a test case.");
         println!("Green = pass, red = fail.");
         println!();
 
-
         let cases = Self::build_cases(config.n_train);
         let mut summaries = Vec::with_capacity(cases.len());
-
 
         for case in cases {
             let summary = Self::run_case(case, &config);
             summaries.push(summary);
         }
-
 
         println!("{BOLD}{CYAN}Done testing multiple datasets.{RESET}");
         println!();
@@ -618,7 +469,6 @@ fn main() {
         n_show: 12,
         delay_ms: 150,
     };
-
 
     Runner::run(config);
 }
