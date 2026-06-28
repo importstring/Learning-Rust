@@ -238,15 +238,15 @@ impl Solution {
 }
 
 
-
 // Tests (skeleton, adapt to your real test harness)
 
 fn main() {
-    println!("\x1b[1m\x1b[35mNN Runner: Train One Neuron\x1b[0m");
+    // Header banner
+    println!("\x1b[1m\x1b[35m=============================\x1b[0m");
+    println!("\x1b[1m\x1b[35m  NN Runner: Train One Neuron\x1b[0m");
+    println!("\x1b[1m\x1b[35m=============================\x1b[0m");
 
-    // Example tiny dataset (replace with the real one from the file):
-    // E.g. learn y = 2x + 1 for x in R^1.
-
+    // Tiny dataset: y = 2x + 1
     let xs = vec![
         vec![0.0],
         vec![1.0],
@@ -261,11 +261,30 @@ fn main() {
     let lr = 0.1;
     let epochs = 100;
 
-    let neuron = Solution::train_one_neuron(xs, ys, lr, epochs);
+    let neuron = Solution::train_one_neuron(xs.clone(), ys.clone(), lr, epochs);
 
-    println!("Trained weights: {:?}", neuron.w);
-    println!("Trained bias:    {:?}", neuron.b);
+    // Show learned parameters
+    println!();
+    println!("\x1b[1m\x1b[32m✔ Training complete\x1b[0m");
+    println!("\x1b[1mLearned parameters:\x1b[0m");
+    println!("  w = {:?}", neuron.w);
+    println!("  b = {:?}", neuron.b);
 
-    // In your actual file, the tests will assert that neuron.w and neuron.b
-    // are close to some expected values using eps comparisons, similar to Step 14.
+    // Compare to target y = 2x + 1 on the training points
+    println!();
+    println!("\x1b[1m\x1b[33mSample predictions (target: y = 2x + 1):\x1b[0m");
+    for (x, y_true) in xs.iter().zip(ys.iter()) {
+        let y_hat = neuron.forward(x);
+        println!(
+            "  x = {:>4.1}, y_true = {:>4.1}, y_hat = {:>8.4}",
+            x[0],
+            y_true,
+            y_hat
+        );
+    }
+
+    // Small “epilogue”
+    println!();
+    println!("\x1b[1m\x1b[36mYou just trained a neuron end-to-end in Rust.\x1b[0m");
+    println!("\x1b[1m\x1b[36mForward → loss → backward → SGD is now in your hands.\x1b[0m");
 }
