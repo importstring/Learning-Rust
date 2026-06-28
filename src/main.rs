@@ -238,53 +238,367 @@ impl Solution {
 }
 
 
-// Tests (skeleton, adapt to your real test harness)
+// Tests
 
-fn main() {
-    // Header banner
-    println!("\x1b[1m\x1b[35m=============================\x1b[0m");
-    println!("\x1b[1m\x1b[35m  NN Runner: Train One Neuron\x1b[0m");
-    println!("\x1b[1m\x1b[35m=============================\x1b[0m");
+use std::thread;
+use std::time::Duration;
 
-    // Tiny dataset: y = 2x + 1
-    let xs = vec![
-        vec![0.0],
-        vec![1.0],
-        vec![2.0],
-    ];
-    let ys = vec![
-        1.0,
-        3.0,
-        5.0,
-    ];
+const GREEN: &str = "\x1b[32m";
+const RED: &str = "\x1b[31m";
+const YELLOW: &str = "\x1b[33m";
+const CYAN: &str = "\x1b[36m";
+const MAGENTA: &str = "\x1b[35m";
+const BOLD: &str = "\x1b[1m";
+const RESET: &str = "\x1b[0m";
 
-    let lr = 0.1;
-    let epochs = 100;
+type Dataset = (Vec<Vec<f32>>, Vec<f32>);
 
-    let neuron = Solution::train_one_neuron(xs.clone(), ys.clone(), lr, epochs);
+struct RunConfig {
+    lr: f32,
+    epochs: usize,
+    n_train: usize,
+    n_show: usize,
+    delay_ms: u64,
+}
 
-    // Show learned parameters
-    println!();
-    println!("\x1b[1m\x1b[32m✔ Training complete\x1b[0m");
-    println!("\x1b[1mLearned parameters:\x1b[0m");
-    println!("  w = {:?}", neuron.w);
-    println!("  b = {:?}", neuron.b);
+struct DemoCase {
+    title: &'static str,
+    tolerance: f32,
+    dataset: Dataset,
+}
 
-    // Compare to target y = 2x + 1 on the training points
-    println!();
-    println!("\x1b[1m\x1b[33mSample predictions (target: y = 2x + 1):\x1b[0m");
-    for (x, y_true) in xs.iter().zip(ys.iter()) {
-        let y_hat = neuron.forward(x);
-        println!(
-            "  x = {:>4.1}, y_true = {:>4.1}, y_hat = {:>8.4}",
-            x[0],
-            y_true,
-            y_hat
-        );
+struct DemoSummary {
+    title: String,
+    shown: usize,
+    passed: usize,
+    mae: f32,
+    score: f32,
+}
+
+impl DemoSummary {
+    fn score_label(&self) -> &'static str {
+        if self.score >= 99.0 {
+            "Excellent fit"
+        } else if self.score >= 90.0 {
+            "Strong fit"
+        } else if self.score >= 75.0 {
+            "Decent fit"
+        } else if self.score >= 50.0 {
+            "Weak fit"
+        } else {
+            "Poor fit"
+        }
     }
 
-    // Small “epilogue”
-    println!();
-    println!("\x1b[1m\x1b[36mYou just trained a neuron end-to-end in Rust.\x1b[0m");
-    println!("\x1b[1m\x1b[36mForward → loss → backward → SGD is now in your hands.\x1b[0m");
+    fn all_passed(&self) -> bool {
+        self.passed == self.shown
+    }
+}
+
+struct Runner;
+
+impl Runner {
+    fn print_banner(title: &str) {
+        println!("{BOLD}{MAGENTA}============================={RESET}");
+        println!("{BOLD}{MAGENTA}  {title}{RESET}");
+        println!("{BOLD}{MAGENTA}============================={RESET}");
+    }
+
+    fn status_label(passed: bool) -> &'static str {
+        if passed { "PASS" } else { "FAIL" }
+    }
+
+    fn status_color(passed: bool) -> &'static str {
+        if passed { GREEN } else { RED }
+    }
+
+    fn build_linear_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        let n_f = n as f32;
+        for i in 0..n {
+            let t = i as f32 / (n_f - 1.0).max(1.0);
+            let x = -5.0 + 10.0 * t;
+            let y = 2.0 * x + 1.0;
+            xs.push(vec![x]);
+            ys.push(y);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_exponential_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        let n_f = n as f32;
+        for i in 0..n {
+            let t = i as f32 / (n_f - 1.0).max(1.0);
+            let x = 4.0 * t;
+            let y = (0.5 * x).exp();
+            xs.push(vec![x]);
+            ys.push(y);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_quadratic_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        let n_f = n as f32;
+        for i in 0..n {
+            let t = i as f32 / (n_f - 1.0).max(1.0);
+            let x = -2.0 + 4.0 * t;
+            let y = x * x;
+            xs.push(vec![x]);
+            ys.push(y);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_affine_2d_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        let side = (n as f32).sqrt().floor() as usize;
+        let side = side.max(2);
+        let side_f = side as f32;
+
+        for i in 0..side {
+            for j in 0..side {
+                if xs.len() >= n {
+                    break;
+                }
+
+                let ti = i as f32 / (side_f - 1.0).max(1.0);
+                let tj = j as f32 / (side_f - 1.0).max(1.0);
+
+                let x1 = -3.0 + 6.0 * ti;
+                let x2 = -3.0 + 6.0 * tj;
+                let y = 3.0 * x1 - x2 + 0.5;
+
+                xs.push(vec![x1, x2]);
+                ys.push(y);
+            }
+        }
+
+        (xs, ys)
+    }
+
+    fn build_cases(n_train: usize) -> Vec<DemoCase> {
+        vec![
+            DemoCase {
+                title: "NN Runner: y = 2x + 1 (1D linear)",
+                tolerance: 0.25,
+                dataset: Self::build_linear_dataset(n_train),
+            },
+            DemoCase {
+                title: "NN Runner: y = exp(0.5x) (1D exponential)",
+                tolerance: 0.60,
+                dataset: Self::build_exponential_dataset(n_train),
+            },
+            DemoCase {
+                title: "NN Runner: y = x^2 (1D quadratic)",
+                tolerance: 0.75,
+                dataset: Self::build_quadratic_dataset(n_train),
+            },
+            DemoCase {
+                title: "NN Runner: y = 3x1 - x2 + 0.5 (2D affine)",
+                tolerance: 0.30,
+                dataset: Self::build_affine_2d_dataset(n_train),
+            },
+        ]
+    }
+
+    fn run_case(case: DemoCase, config: &RunConfig) -> DemoSummary {
+        Self::print_banner(case.title);
+
+        let (xs, ys) = case.dataset;
+        let neuron = Solution::train_one_neuron(
+            xs.clone(),
+            ys.clone(),
+            config.lr,
+            config.epochs,
+        );
+
+        println!();
+        println!("{BOLD}{GREEN}✔ Training complete{RESET}");
+        println!("{BOLD}Learned parameters:{RESET}");
+        println!("  w = {:?}", neuron.w);
+        println!("  b = {:?}", neuron.b);
+
+        println!();
+        println!("{BOLD}{YELLOW}Prediction test cases:{RESET}");
+
+        let n = xs.len();
+        let step = if config.n_show == 0 {
+            1
+        } else {
+            (n.max(1) / config.n_show.max(1)).max(1)
+        };
+
+        let mut shown = 0usize;
+        let mut i = 0usize;
+        let mut passed = 0usize;
+        let mut total_error = 0.0f32;
+
+        while i < n && shown < config.n_show {
+            thread::sleep(Duration::from_millis(config.delay_ms));
+
+            let x = &xs[i];
+            let y_true = ys[i];
+            let y_hat = neuron.forward(x);
+            let error = (y_hat - y_true).abs();
+            let is_pass = error <= case.tolerance;
+
+            if is_pass {
+                passed += 1;
+            }
+            total_error += error;
+
+            println!(
+                "  Test {:>2}: {}{}{}  x = {:?}, y_true = {:>8.4}, y_hat = {:>8.4}, error = {:>8.4}",
+                shown + 1,
+                Self::status_color(is_pass),
+                Self::status_label(is_pass),
+                RESET,
+                x,
+                y_true,
+                y_hat,
+                error
+            );
+
+            shown += 1;
+            i += step;
+        }
+
+        let score = if shown > 0 {
+            100.0 * passed as f32 / shown as f32
+        } else {
+            0.0
+        };
+
+        let mae = if shown > 0 {
+            total_error / shown as f32
+        } else {
+            0.0
+        };
+
+        let summary = DemoSummary {
+            title: case.title.to_string(),
+            shown,
+            passed,
+            mae,
+            score,
+        };
+
+        let summary_color = Self::status_color(summary.all_passed());
+        let summary_label = if summary.all_passed() {
+            "ALL PASSED"
+        } else {
+            "SOME FAILED"
+        };
+
+        println!();
+        println!(
+            "{BOLD}{CYAN}Summary:{RESET} {}{}{} ({}/{})",
+            summary_color,
+            summary_label,
+            RESET,
+            summary.passed,
+            summary.shown
+        );
+        println!("  Score:     {:>5.1}% ({})", summary.score, summary.score_label());
+        println!("  MAE:       {:>5.4}", summary.mae);
+        println!();
+
+        summary
+    }
+
+    fn print_overall_summary(summaries: &[DemoSummary]) {
+        let case_count = summaries.len();
+        if case_count == 0 {
+            return;
+        }
+
+        let mut total_score = 0.0f32;
+        let mut total_mae = 0.0f32;
+        let mut total_passed = 0usize;
+        let mut total_shown = 0usize;
+
+        for summary in summaries {
+            total_score += summary.score;
+            total_mae += summary.mae;
+            total_passed += summary.passed;
+            total_shown += summary.shown;
+        }
+
+        let avg_score = total_score / case_count as f32;
+        let avg_mae = total_mae / case_count as f32;
+
+        println!("{BOLD}{CYAN}Overall score:{RESET} {:>5.1}%", avg_score);
+        println!("  Total passes: {}/{}", total_passed, total_shown);
+        println!("  Average MAE:  {:>5.4}", avg_mae);
+        println!();
+    }
+
+    fn print_runner_notes() {
+        println!("{BOLD}{YELLOW}Notes:{RESET}");
+        println!("  - Linear and 2D affine tasks pass because one neuron");
+        println!("    computes y = w·x + b, which can represent affine rules exactly.");
+        println!("  - Exponential and quadratic tasks are nonlinear, so a single");
+        println!("    linear neuron can only approximate them, not fit them perfectly.");
+        println!("  - That is why the quadratic section has several FAIL results:");
+        println!("    the model is too simple, not necessarily incorrect.");
+        println!();
+
+        println!("{BOLD}{CYAN}Why this matters:{RESET}");
+        println!("  - Step 15 gives you a full training loop end-to-end.");
+        println!("  - It also shows the limit of a single linear neuron.");
+        println!("  - To model curved patterns like x^2, we need nonlinear");
+        println!("    activations and eventually multiple neurons/layers.");
+        println!();
+
+        println!("{BOLD}{MAGENTA}Next direction:{RESET}");
+        println!("  - Keep building from this training loop.");
+        println!("  - The next big idea is moving from one neuron to richer");
+        println!("    models that can represent nonlinear behavior.");
+        println!();
+    }
+
+    fn run(config: RunConfig) {
+        Self::print_banner("NN Runner: Train One Neuron");
+        println!("Each prediction below is treated like a test case.");
+        println!("Green = pass, red = fail.");
+        println!();
+
+        let cases = Self::build_cases(config.n_train);
+        let mut summaries = Vec::with_capacity(cases.len());
+
+        for case in cases {
+            let summary = Self::run_case(case, &config);
+            summaries.push(summary);
+        }
+
+        println!("{BOLD}{CYAN}Done testing multiple datasets.{RESET}");
+        println!();
+        Self::print_overall_summary(&summaries);
+        Self::print_runner_notes();
+    }
+}
+
+fn main() {
+    let config = RunConfig {
+        lr: 0.05,
+        epochs: 200,
+        n_train: 200,
+        n_show: 12,
+        delay_ms: 150,
+    };
+
+    Runner::run(config);
 }
