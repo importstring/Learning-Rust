@@ -111,10 +111,24 @@ pub struct DenseLayer {
 impl DenseLayer {
     pub fn forward(&self, x: &[f32]) -> Vec<f32> {
         // TODO: compute y_hat = xW + b
+        let D = self.w.len();
+        let O = self.w[0].len();
+
+        let mut z = vec![0.0; O];
+        for i in 0..D {
+            for j in 0..O {
+                z[j] += x[i] * self.w[i][j];
+            }
+        }
+        
+        let mut y_hat = Vec::with_capacity(O)
+        for j in 0..O {
+            y_hat.push(z[j] + self.b[j]);
+        }
+
+        y_hat
     }
 }
-
-
 
 /// Hints:
 /// 1) This is scalar MSE repeated across output coordinates.
@@ -122,8 +136,15 @@ impl DenseLayer {
 /// 3) Be careful not to average twice unless the problem explicitly wants that.
 pub fn loss_mse_vec(y_hat: &[f32], y: &[f32]) -> f32 {
     // TODO: compute vector MSE loss
-}
+    let mut out = 0.0_f32;
 
+    for j in 0..y.len() {
+        let e = y_hat[j] - y[j];
+        out += 0.5 * e * e;
+    }
+
+    out
+}
 
 
 /// Hints:
@@ -136,6 +157,7 @@ pub fn dense_gradients(
     y: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
     // TODO: compute per-sample dW and db
+    
 }
 
 
