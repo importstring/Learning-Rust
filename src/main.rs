@@ -111,18 +111,18 @@ pub struct DenseLayer {
 impl DenseLayer {
     pub fn forward(&self, x: &[f32]) -> Vec<f32> {
         // TODO: compute y_hat = xW + b
-        let D = self.w.len();
-        let O = self.w[0].len();
+        let d = self.w.len();
+        let o = self.w[0].len();
 
-        let mut z = vec![0.0; O];
-        for i in 0..D {
-            for j in 0..O {
+        let mut z = vec![0.0; o];
+        for i in 0..d {
+            for j in 0..o {
                 z[j] += x[i] * self.w[i][j];
             }
         }
         
-        let mut y_hat = Vec::with_capacity(O)
-        for j in 0..O {
+        let mut y_hat = Vec::with_capacity(o)
+        for j in 0..o {
             y_hat.push(z[j] + self.b[j]);
         }
 
@@ -159,18 +159,19 @@ pub fn dense_gradients(
     y: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
     // TODO: compute per-sample dW and db
-    let rows = layer.w.len(); // D
-    let cols = layer.w[0].len(); // O
+    let d = layer.w.len(); // D
+    let o = layer.w[0].len(); // O
+
     let mut db = vec![0.0; cols];
+    for j in 0..o {
+        db[j] = y_hat[j] - y[j];
+    }
+
     let mut dW = vec![vec![0.0; rows]; cols];
-
-    let y_hat = vec![0.0; cols];
-
     for i in 0..rows {
         for j in 0..cols {
-            y_hat[j] = forward(x);
-            db[j] = y_hat[j] - y[j];
-            dW[i][j] = x[i] * (y_hat[j] - y[j]);
+            let y_hat = forward(x);
+            dW[i][j] = x[i] * db[j];
         }
     }
 
@@ -213,14 +214,31 @@ impl Solution {
         epochs: usize,
     ) -> DenseLayer {
         // TODO: implement full dense-layer training loop
-        let N = xs.len();
-        let D = xs[0].len();
+        let N = xs.len(); // Samples
+        let D = xs[0].len(); // Input dimension
+        let O = ys[0].len(); // Output dimension
 
-        let mut y_hat  = vec![vec![0.0; D] N];
-        for n in 0..xs.len() {
-            for i in 0..xs[0].len() {
+        let mut layer = DenseLayer {
+            w: vec![vec![0.0; O]; D],
+            b: vec![0.0; O],
+        };
 
+        let mut db_sum = vec![0.0; O];
+        let mut dW_sum = vec![vec![0.0; O]; D];
+
+        for e in 0..epochs {
+            for n in 0..N {
+                let (dW, db) = dense_gradients(xs[n], ys[n]);
+
+                for j in 0..dW.len() {
+                    dW_sum[n][j] += dW[j];
+                }
+
+                db_sum[n] += db;
+                
+                sgd_update_dense(layer, xs[n], ys[n]);
             }
+            
         }
     }
 }
