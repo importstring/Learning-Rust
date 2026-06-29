@@ -260,8 +260,6 @@ impl Solution {
     }
 }
 
-
-
 // Tests / Demo
 
 use std::thread;
@@ -337,7 +335,6 @@ impl Runner {
     }
 
     fn vector_max_abs_error(a: &[f32], b: &[f32]) -> f32 {
-        // max_j |a[j] - b[j]|
         let mut out = 0.0_f32;
         for j in 0..a.len() {
             let err = (a[j] - b[j]).abs();
@@ -349,7 +346,6 @@ impl Runner {
     }
 
     fn vector_mean_abs_error(a: &[f32], b: &[f32]) -> f32 {
-        // mean_j |a[j] - b[j]|
         let mut out = 0.0_f32;
         for j in 0..a.len() {
             out += (a[j] - b[j]).abs();
@@ -358,8 +354,6 @@ impl Runner {
     }
 
     fn build_two_output_linear_dataset(n: usize) -> Dataset {
-        // x has shape [1]
-        // y = [2x + 1, -x + 0.5]
         let mut xs = Vec::with_capacity(n);
         let mut ys = Vec::with_capacity(n);
 
@@ -373,11 +367,6 @@ impl Runner {
     }
 
     fn build_two_input_two_output_affine_dataset(n: usize) -> Dataset {
-        // x = [x1, x2]
-        // y = [
-        //   3x1 - x2 + 0.5,
-        //   x1 + 2x2 - 1.0,
-        // ]
         let mut xs = Vec::with_capacity(n);
         let mut ys = Vec::with_capacity(n);
 
@@ -389,6 +378,90 @@ impl Runner {
             ys.push(vec![
                 3.0 * x1 - x2 + 0.5,
                 x1 + 2.0 * x2 - 1.0,
+            ]);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_two_output_linear_shifted_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        for i in 0..n {
+            let x = -2.0 + 4.0 * (i as f32) / (n as f32);
+            xs.push(vec![x]);
+            ys.push(vec![
+                -3.0 * x + 2.0,
+                0.25 * x - 1.5,
+            ]);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_three_input_two_output_affine_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        for i in 0..n {
+            let t = -1.0 + 2.0 * (i as f32) / (n as f32);
+            let x1 = t;
+            let x2 = 0.5 * t + 0.25;
+            let x3 = -0.75 * t + 0.1;
+
+            xs.push(vec![x1, x2, x3]);
+            ys.push(vec![
+                2.0 * x1 - x2 + 0.5 * x3 + 0.25,
+                -x1 + 3.0 * x2 + 2.0 * x3 - 0.75,
+            ]);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_quadratic_two_output_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        for i in 0..n {
+            let x = -1.5 + 3.0 * (i as f32) / (n as f32);
+            xs.push(vec![x]);
+            ys.push(vec![
+                x * x,
+                0.5 * x * x - x + 1.0,
+            ]);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_sine_like_two_output_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        for i in 0..n {
+            let x = -1.0 + 2.0 * (i as f32) / (n as f32);
+            xs.push(vec![x]);
+            ys.push(vec![
+                x.sin(),
+                (2.0 * x).sin(),
+            ]);
+        }
+
+        (xs, ys)
+    }
+
+    fn build_small_range_almost_linear_dataset(n: usize) -> Dataset {
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        for i in 0..n {
+            let x = -0.2 + 0.4 * (i as f32) / (n as f32);
+            xs.push(vec![x]);
+            ys.push(vec![
+                x.exp(),
+                x * x + 0.5,
             ]);
         }
 
@@ -407,7 +480,74 @@ impl Runner {
                 tolerance: 0.30,
                 dataset: Self::build_two_input_two_output_affine_dataset(n_train),
             },
+            DemoCase {
+                title: "NN Runner: shifted affine map (1D -> 2D)",
+                tolerance: 0.25,
+                dataset: Self::build_two_output_linear_shifted_dataset(n_train),
+            },
+            DemoCase {
+                title: "NN Runner: 3-input affine map (3D -> 2D)",
+                tolerance: 0.30,
+                dataset: Self::build_three_input_two_output_affine_dataset(n_train),
+            },
+            DemoCase {
+                title: "NN Runner: quadratic targets (should struggle)",
+                tolerance: 0.20,
+                dataset: Self::build_quadratic_two_output_dataset(n_train),
+            },
+            DemoCase {
+                title: "NN Runner: sinusoidal targets (should struggle)",
+                tolerance: 0.20,
+                dataset: Self::build_sine_like_two_output_dataset(n_train),
+            },
+            DemoCase {
+                title: "NN Runner: small-range nonlinear targets (may look decent)",
+                tolerance: 0.20,
+                dataset: Self::build_small_range_almost_linear_dataset(n_train),
+            },
         ]
+    }
+
+    fn choose_indices_to_show(pass_flags: &[bool], n_show: usize) -> Vec<usize> {
+        let n = pass_flags.len();
+        if n == 0 || n_show == 0 {
+            return Vec::new();
+        }
+
+        let mut chosen = Vec::new();
+        let mut used = vec![false; n];
+
+        for i in 0..n {
+            if !pass_flags[i] && chosen.len() < n_show {
+                chosen.push(i);
+                used[i] = true;
+            }
+        }
+
+        if chosen.len() < n_show {
+            let remaining = n_show - chosen.len();
+            let step = (n.max(1) / remaining.max(1)).max(1);
+
+            let mut i = 0usize;
+            while i < n && chosen.len() < n_show {
+                if !used[i] {
+                    chosen.push(i);
+                    used[i] = true;
+                }
+                i += step;
+            }
+        }
+
+        if chosen.len() < n_show {
+            for i in 0..n {
+                if !used[i] && chosen.len() < n_show {
+                    chosen.push(i);
+                    used[i] = true;
+                }
+            }
+        }
+
+        chosen
     }
 
     fn run_case(case: DemoCase, config: &RunConfig) -> DemoSummary {
@@ -431,26 +571,19 @@ impl Runner {
         println!("{BOLD}{YELLOW}Prediction test cases:{RESET}");
 
         let n = xs.len();
-        let step = if config.n_show == 0 {
-            1
-        } else {
-            (n.max(1) / config.n_show.max(1)).max(1)
-        };
 
-        let mut shown = 0usize;
-        let mut i = 0usize;
+        let mut pass_flags = Vec::with_capacity(n);
+        let mut max_errs = Vec::with_capacity(n);
+        let mut mean_errs = Vec::with_capacity(n);
+        let mut y_hats = Vec::with_capacity(n);
+
         let mut passed = 0usize;
         let mut total_error = 0.0f32;
 
-        while i < n && shown < config.n_show {
-            thread::sleep(Duration::from_millis(config.delay_ms));
-
-            let x = &xs[i];
-            let y_true = &ys[i];
-            let y_hat = layer.forward(x);
-
-            let max_err = Self::vector_max_abs_error(&y_hat, y_true);
-            let mean_err = Self::vector_mean_abs_error(&y_hat, y_true);
+        for i in 0..n {
+            let y_hat = layer.forward(&xs[i]);
+            let max_err = Self::vector_max_abs_error(&y_hat, &ys[i]);
+            let mean_err = Self::vector_mean_abs_error(&y_hat, &ys[i]);
             let is_pass = max_err <= case.tolerance;
 
             if is_pass {
@@ -458,9 +591,27 @@ impl Runner {
             }
             total_error += mean_err;
 
+            pass_flags.push(is_pass);
+            max_errs.push(max_err);
+            mean_errs.push(mean_err);
+            y_hats.push(y_hat);
+        }
+
+        let show_indices = Self::choose_indices_to_show(&pass_flags, config.n_show);
+
+        for (shown_idx, &i) in show_indices.iter().enumerate() {
+            thread::sleep(Duration::from_millis(config.delay_ms));
+
+            let x = &xs[i];
+            let y_true = &ys[i];
+            let y_hat = &y_hats[i];
+            let max_err = max_errs[i];
+            let mean_err = mean_errs[i];
+            let is_pass = pass_flags[i];
+
             println!(
-                "  Test {:>2}: {}{}{}  x = {:?}, y_true = {:?}, y_hat = {:?}, max_err = {:>8.4}, mean_err = {:>8.4}",
-                shown + 1,
+                "  Test {:>3}: {}{}{}  x = {:?}, y_true = {:?}, y_hat = {:?}, max_err = {:>8.4}, mean_err = {:>8.4}",
+                i + 1,
                 Self::status_color(is_pass),
                 Self::status_label(is_pass),
                 RESET,
@@ -471,18 +622,19 @@ impl Runner {
                 mean_err
             );
 
-            shown += 1;
-            i += step;
+            let _ = shown_idx;
         }
 
-        let score = if shown > 0 {
-            100.0 * passed as f32 / shown as f32
+        let shown = show_indices.len();
+
+        let score = if n > 0 {
+            100.0 * passed as f32 / n as f32
         } else {
             0.0
         };
 
-        let mae = if shown > 0 {
-            total_error / shown as f32
+        let mae = if n > 0 {
+            total_error / n as f32
         } else {
             0.0
         };
@@ -495,8 +647,8 @@ impl Runner {
             score,
         };
 
-        let summary_color = Self::status_color(summary.all_passed());
-        let summary_label = if summary.all_passed() {
+        let summary_color = if passed == n { GREEN } else { RED };
+        let summary_label = if passed == n {
             "ALL PASSED"
         } else {
             "SOME FAILED"
@@ -508,9 +660,10 @@ impl Runner {
             summary_color,
             summary_label,
             RESET,
-            summary.passed,
-            summary.shown
+            passed,
+            n
         );
+        println!("  Visible:   {}/{}", shown, n);
         println!("  Score:     {:>5.1}% ({})", summary.score, summary.score_label());
         println!("  Mean MAE:  {:>5.4}", summary.mae);
         println!();
@@ -519,7 +672,6 @@ impl Runner {
     }
 
     fn print_overall_summary(summaries: &[DemoSummary]) {
-        // aggregate overall score/MAE across cases
         let mut total_score = 0.0_f32;
         let mut total_mae = 0.0_f32;
         let mut count = 0usize;
@@ -545,6 +697,15 @@ impl Runner {
         println!("{BOLD}{CYAN}Overall summary across datasets:{RESET}");
         println!("  Avg score: {:>5.1}%", avg_score);
         println!("  Avg MAE:   {:>5.4}", avg_mae);
+        println!();
+
+        println!("{BOLD}{CYAN}Per-case recap:{RESET}");
+        for s in summaries {
+            println!(
+                "  - {}: visible = {}, passed = {}, score = {:>5.1}%, MAE = {:>6.4}",
+                s.title, s.shown, s.passed, s.score, s.mae
+            );
+        }
         println!();
     }
 
@@ -592,7 +753,7 @@ fn main() {
     let config = RunConfig {
         lr: 0.05,
         epochs: 200,
-        n_train: 200,
+        n_train: 100,
         n_show: 12,
         delay_ms: 150,
     };
