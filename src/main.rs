@@ -138,7 +138,7 @@ impl DenseReluLayer {
             }
         }
 
-        for j in 0..d {
+        for j in 0..o {
             z[j] += self.b[j];
         }
 
@@ -151,7 +151,13 @@ impl DenseReluLayer {
     /// 3) Output length is O.
     pub fn forward(&self, x: &[f32]) -> Vec<f32> {
         // TODO: compute y_hat = relu(forward_linear(x))
-        
+        let mut a = Vec::with_capacity(x.len());
+ 
+        for z in self.forward_linear(x) {
+            a.push(relu(z));
+        }
+
+        a
     }
 }
 
@@ -160,8 +166,14 @@ impl DenseReluLayer {
 /// 2) Keep the 0.5 factor.
 /// 3) Do not average inside this function.
 pub fn loss_mse_vec(y_hat: &[f32], y: &[f32]) -> f32 {
-    // TODO: compute vector MSE loss
-    unimplemented!()
+    let out: Vec<f32> = Vec::with_capacity(self.b.len());
+
+    for i in 0..y.len() {
+        let e = y_hat[i] - y[i];
+        out.push(0.5 * e * e);
+    }
+
+    out
 }
 
 /// Hints:
@@ -176,7 +188,7 @@ pub fn dense_relu_gradients(
     y: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
     // TODO: compute per-sample dW and db for dense + ReLU
-    unimplemented!()
+    
 }
 
 /// Hints:
