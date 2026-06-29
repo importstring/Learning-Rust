@@ -121,7 +121,7 @@ impl DenseLayer {
             }
         }
         
-        let mut y_hat = Vec::with_capacity(o)
+        let mut y_hat = Vec::with_capacity(o);
         for j in 0..o {
             y_hat.push(z[j] + self.b[j]);
         }
@@ -162,15 +162,16 @@ pub fn dense_gradients(
     let d = layer.w.len(); // D
     let o = layer.w[0].len(); // O
 
-    let mut db = vec![0.0; cols];
+    let mut db = vec![0.0; o];
+    let y_hat: Vec<f32> = layer.forward(x);
+
     for j in 0..o {
         db[j] = y_hat[j] - y[j];
     }
 
-    let mut dW = vec![vec![0.0; rows]; cols];
-    for i in 0..rows {
-        for j in 0..cols {
-            let y_hat = forward(x);
+    let mut dW = vec![vec![0.0; o]; d];
+    for i in 0..d {
+        for j in 0..o {
             dW[i][j] = x[i] * db[j];
         }
     }
@@ -214,32 +215,48 @@ impl Solution {
         epochs: usize,
     ) -> DenseLayer {
         // TODO: implement full dense-layer training loop
-        let N = xs.len(); // Samples
-        let D = xs[0].len(); // Input dimension
-        let O = ys[0].len(); // Output dimension
+        let n = xs.len(); // Samples
+        let d = xs[0].len(); // Input dimension
+        let o = ys[0].len(); // Output dimension
 
         let mut layer = DenseLayer {
-            w: vec![vec![0.0; O]; D],
-            b: vec![0.0; O],
+            w: vec![vec![0.0; o]; d],
+            b: vec![0.0; o],
         };
 
-        let mut db_sum = vec![0.0; O];
-        let mut dW_sum = vec![vec![0.0; O]; D];
-
         for e in 0..epochs {
-            for n in 0..N {
-                let (dW, db) = dense_gradients(xs[n], ys[n]);
-
-                for j in 0..dW.len() {
-                    dW_sum[n][j] += dW[j];
-                }
-
-                db_sum[n] += db;
-                
-                sgd_update_dense(layer, xs[n], ys[n]);
-            }
             
+            let mut db_sum = vec![0.0; o];
+            let mut dW_sum = vec![vec![0.0; o]; d];
+
+            for n in 0..n {
+                let (dW, db) = dense_gradients(&layer, &xs[n], &ys[n]);
+
+                for i in 0..d {
+                    for j in 0..o {
+                        dW_sum[i][j] += dW[i][j];
+                    }
+                }
+                
+                for j in 0..o {
+                    db_sum[j] += db[j];
+                }
+            }
+
+            for i in 0..d {
+                for j in 0..o {
+                    dW_sum[i][j] /= n as f32;
+                }
+            }
+
+            for j in 0..o {
+                db_sum[j] /= n as f32;
+            }
+
+            sgd_update_dense(&mut layer, &dW_sum, &db_sum, lr);
         }
+
+        layer
     }
 }
 
@@ -247,10 +264,8 @@ impl Solution {
 
 // Tests / Demo
 
-
 use std::thread;
 use std::time::Duration;
-
 
 const GREEN: &str = "\x1b[32m";
 const RED: &str = "\x1b[31m";
@@ -260,9 +275,7 @@ const MAGENTA: &str = "\x1b[35m";
 const BOLD: &str = "\x1b[1m";
 const RESET: &str = "\x1b[0m";
 
-
 type Dataset = (Vec<Vec<f32>>, Vec<Vec<f32>>);
-
 
 struct RunConfig {
     lr: f32,
@@ -272,13 +285,11 @@ struct RunConfig {
     delay_ms: u64,
 }
 
-
 struct DemoCase {
     title: &'static str,
     tolerance: f32,
     dataset: Dataset,
 }
-
 
 struct DemoSummary {
     title: String,
@@ -287,7 +298,6 @@ struct DemoSummary {
     mae: f32,
     score: f32,
 }
-
 
 impl DemoSummary {
     fn score_label(&self) -> &'static str {
@@ -309,9 +319,7 @@ impl DemoSummary {
     }
 }
 
-
 struct Runner;
-
 
 impl Runner {
     fn print_banner(title: &str) {
@@ -329,38 +337,62 @@ impl Runner {
     }
 
     fn vector_max_abs_error(a: &[f32], b: &[f32]) -> f32 {
-        // TODO: return max_j |a[j] - b[j]|
-        //
-        // Hint:
-        // This is a worst-coordinate error, not an average.
+        // max_j |a[j] - b[j]|
+        let mut out = 0.0_f32;
+        for j in 0..a.len() {
+            let err = (a[j] - b[j]).abs();
+            if err > out {
+                out = err;
+            }
+        }
+        out
     }
 
     fn vector_mean_abs_error(a: &[f32], b: &[f32]) -> f32 {
-        // TODO: return mean_j |a[j] - b[j]|
-        //
-        // Hint:
-        // This is the average absolute coordinate error.
+        // mean_j |a[j] - b[j]|
+        let mut out = 0.0_f32;
+        for j in 0..a.len() {
+            out += (a[j] - b[j]).abs();
+        }
+        out / a.len() as f32
     }
 
     fn build_two_output_linear_dataset(n: usize) -> Dataset {
-        // TODO:
         // x has shape [1]
         // y = [2x + 1, -x + 0.5]
-        //
-        // Hint:
-        // This should be exactly learnable by one dense layer.
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        for i in 0..n {
+            let x = -1.0 + 2.0 * (i as f32) / (n as f32);
+            xs.push(vec![x]);
+            ys.push(vec![2.0 * x + 1.0, -x + 0.5]);
+        }
+
+        (xs, ys)
     }
 
     fn build_two_input_two_output_affine_dataset(n: usize) -> Dataset {
-        // TODO:
         // x = [x1, x2]
         // y = [
         //   3x1 - x2 + 0.5,
         //   x1 + 2x2 - 1.0,
         // ]
-        //
-        // Hint:
-        // This is also exactly learnable by one dense layer.
+        let mut xs = Vec::with_capacity(n);
+        let mut ys = Vec::with_capacity(n);
+
+        for i in 0..n {
+            let x1 = -1.0 + 2.0 * (i as f32) / (n as f32);
+            let x2 = 1.0 - 2.0 * (i as f32) / (n as f32);
+
+            xs.push(vec![x1, x2]);
+            ys.push(vec![
+                3.0 * x1 - x2 + 0.5,
+                x1 + 2.0 * x2 - 1.0,
+            ]);
+        }
+
+        (xs, ys)
     }
 
     fn build_cases(n_train: usize) -> Vec<DemoCase> {
@@ -487,10 +519,33 @@ impl Runner {
     }
 
     fn print_overall_summary(summaries: &[DemoSummary]) {
-        // TODO: aggregate overall score/MAE across cases
-        //
-        // Hint:
-        // Same aggregation pattern as the previous runner.
+        // aggregate overall score/MAE across cases
+        let mut total_score = 0.0_f32;
+        let mut total_mae = 0.0_f32;
+        let mut count = 0usize;
+
+        for s in summaries {
+            total_score += s.score;
+            total_mae += s.mae;
+            count += 1;
+        }
+
+        let avg_score = if count > 0 {
+            total_score / count as f32
+        } else {
+            0.0
+        };
+
+        let avg_mae = if count > 0 {
+            total_mae / count as f32
+        } else {
+            0.0
+        };
+
+        println!("{BOLD}{CYAN}Overall summary across datasets:{RESET}");
+        println!("  Avg score: {:>5.1}%", avg_score);
+        println!("  Avg MAE:   {:>5.4}", avg_mae);
+        println!();
     }
 
     fn print_runner_notes() {
@@ -532,7 +587,6 @@ impl Runner {
         Self::print_runner_notes();
     }
 }
-
 
 fn main() {
     let config = RunConfig {
