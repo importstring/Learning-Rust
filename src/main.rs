@@ -190,8 +190,15 @@ pub fn sgd_update_dense(
     lr: f32,
 ) {
     // TODO: apply SGD update to W and b
+    for i in 0..layer.w.len() {
+        for j in 0..layer.w[0].len() {
+            layer.w[i][j] = layer.w[i][j] - lr * dW[i][j];
+        }
+    }
+    for j in 0..layer.w[0].len() {
+        layer.b[j] = layer.b[j] - lr * db[j];
+    }
 }
-
 
 
 /// Hints:
@@ -206,6 +213,15 @@ impl Solution {
         epochs: usize,
     ) -> DenseLayer {
         // TODO: implement full dense-layer training loop
+        let N = xs.len();
+        let D = xs[0].len();
+
+        let mut y_hat  = vec![vec![0.0; D] N];
+        for n in 0..xs.len() {
+            for i in 0..xs[0].len() {
+
+            }
+        }
     }
 }
 
