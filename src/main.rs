@@ -148,16 +148,33 @@ pub fn loss_mse_vec(y_hat: &[f32], y: &[f32]) -> f32 {
 
 
 /// Hints:
-/// 1) Start from diff[j] = y_hat[j] - y[j].
-/// 2) db is the output-side gradient itself.
-/// 3) dW is an outer-product-shaped object with the same shape as W.
+/// 1) Let D be the input dimension and O be the output dimension.
+///    D = x.len(), O = layer.b.len() (and also layer.w[0].len()).
+/// 2) Compute y_hat first, then diff[j] = y_hat[j] - y[j].
+/// 3) db has length O; dW has shape D x O.
+///    Each dW[i][j] should match the equation dW_ij = x_i * diff_j.
 pub fn dense_gradients(
     layer: &DenseLayer,
     x: &[f32],
     y: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
     // TODO: compute per-sample dW and db
-    
+    let rows = layer.w.len(); // D
+    let cols = layer.w[0].len(); // O
+    let mut db = vec![0.0; cols];
+    let mut dW = vec![vec![0.0; rows]; cols];
+
+    let y_hat = vec![0.0; cols];
+
+    for i in 0..rows {
+        for j in 0..cols {
+            y_hat[j] = forward(x);
+            db[j] = y_hat[j] - y[j];
+            dW[i][j] = x[i] * (y_hat[j] - y[j]);
+        }
+    }
+
+    (dW, db)
 }
 
 
