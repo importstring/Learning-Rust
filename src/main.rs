@@ -188,7 +188,26 @@ pub fn dense_relu_gradients(
     y: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
     // TODO: compute per-sample dW and db for dense + ReLU
+    let d = layer.w.len(); // Input dimension
+    let o = layer.w[0].len(); // Output dimension
 
+    let mut d_b = vec![0.0; o]; // Derivitive with respect to the bias (b)
+    let mut d_w = vec![vec![0.0; o]; d]; // Derivitive with respect to the wieght (W)
+
+    let y_hat = layer.forward(x);
+    let z = layer.forward_linear(x);
+
+    for i in 0..d {
+        for j in 0..o {
+            d_w[i][j] = (y_hat[j]-y[j]) * (relu_deriv(z[j])) * (x[j]);
+        }
+    }
+
+    for j in 0..o {
+        d_b[j] = (y_hat[j]-y[j]) * (relu_deriv(z[j]));
+    }
+
+    (d_w, d_b)
 }
 
 /// Hints:
