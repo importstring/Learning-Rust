@@ -221,7 +221,14 @@ pub fn sgd_update_dense_relu(
     lr: f32,
 ) {
     // TODO: apply SGD update to W and b
-    unimplemented!()
+        for i in 0..layer.w.len() {
+        for j in 0..layer.w[0].len() {
+            layer.w[i][j] = layer.w[i][j] - lr * dW[i][j];
+        }
+    }
+    for j in 0..layer.w[0].len() {
+        layer.b[j] = layer.b[j] - lr * db[j];
+    }
 }
 
 /// Hints:
