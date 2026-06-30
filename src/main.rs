@@ -166,14 +166,14 @@ impl DenseReluLayer {
 /// 2) Keep the 0.5 factor.
 /// 3) Do not average inside this function.
 pub fn loss_mse_vec(y_hat: &[f32], y: &[f32]) -> f32 {
-    let out: Vec<f32> = Vec::with_capacity(self.b.len());
+    let mut loss = 0.0;
 
     for i in 0..y.len() {
         let e = y_hat[i] - y[i];
-        out.push(0.5 * e * e);
+        loss += 0.5 * e * e;
     }
 
-    out
+    loss
 }
 
 /// Hints:
@@ -188,7 +188,7 @@ pub fn dense_relu_gradients(
     y: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
     // TODO: compute per-sample dW and db for dense + ReLU
-    
+
 }
 
 /// Hints:
