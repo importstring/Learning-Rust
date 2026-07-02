@@ -307,21 +307,19 @@ I'm planning on doing a new activity where I do simply a bunch of exercises of j
 
 I've been using this really cool browser extension lately for doing math. The `\partial` command has come in handy every day constantly. I've found once I understood the math and solved derivitives myself, things started making a lot more sense.
 
-Learned how to derive the output-layer delta for MSE with a linear output:
+I kept looking at these solutions using "delta" all the while thinking how it's strange how I'm doing diff xi and diff for d_w and d_b instead of just setting diff as a universal term or something. It just so happened that I glanced at a solution with calculations for delta and realized it's just the first and second derivitive.
 
 $$
 \delta_j = \hat{y}_j - y_j
 $$
 
-And then the gradients for the second layer:
+I then calculated these manually for the second layer for learning purposes.
 
 $$
 \frac{\partial L}{\partial W^{(2)}_{h j}} = \delta_j \, a^{(1)}_h
 \qquad
 \frac{\partial L}{\partial b^{(2)}_j} = \delta_j
 $$
-
-Plus the hidden-layer delta:
 
 $$
 \delta^{(1)}_h
