@@ -121,7 +121,6 @@ Notes:
 - Use small nonzero initialization, not all zeros.
 */
 
-
 struct Solution;
 
 
@@ -344,7 +343,7 @@ pub fn sgd_update_two_layer(
         net.b1[j] -= lr * d_b1[j];
     }
 
-    for i in 0..net.w2[0].len() {
+    for i in 0..net.w2.len() {
         for j in 0..net.w2[0].len() {
             net.w2[i][j] -= lr * d_w2[i][j];
         }
@@ -373,13 +372,13 @@ impl Solution {
 
         let mut net = TwoLayerNet {
             // W1: D x H
-            w1: vec![vec![0.7; hidden_dim]; d],
+            w1: vec![vec![0.1; hidden_dim]; d],
             // b1: H
-            b1: vec![0.4; hidden_dim],
+            b1: vec![0.1; hidden_dim],
             // W2: H x O
-            w2: vec![vec![0.5; o]; hidden_dim],
+            w2: vec![vec![0.1; o]; hidden_dim],
             // b2: O
-            b2: vec![0.5; o],
+            b2: vec![0.1; o],
         };
 
         for e in 0..epochs {
@@ -394,13 +393,13 @@ impl Solution {
 
                 for i in 0..d_w1.len() {
                     for j in 0..d_w1[0].len() {
-                        dw_sum1[i][j] += d_w1[i][j] / n as f32;
+                        dw_sum1[i][j] += d_w1[i][j];
                     }
                 }
 
                 for i in 0..d_w2.len() {
                     for j in 0..d_w2[0].len() {
-                        dw_sum2[i][j] += d_w2[i][j] / n as f32; 
+                        dw_sum2[i][j] += d_w2[i][j]; 
                     }
                 }
 
@@ -411,6 +410,26 @@ impl Solution {
                 for j in 0..db2.len() {
                     db_sum2[j] += db2[j];
                 }
+            }
+
+            for i in 0..dw_sum1.len() {
+                for j in 0..dw_sum1[0].len() {
+                    dw_sum1[i][j] /= n as f32;
+                }
+            }
+
+            for i in 0..dw_sum2.len() {
+                for j in 0..dw_sum2[0].len() {
+                    dw_sum2[i][j] /= n as f32;
+                }
+            }
+
+            for j in 0..db_sum1.len() {
+                db_sum1[j] /= n as f32;
+            }
+
+            for j in 0..db_sum2.len() {
+                db_sum2[j] /= n as f32;
             }
 
             sgd_update_two_layer(&mut net, &dw_sum1, &db_sum1, &dw_sum2, &db_sum2, lr);
