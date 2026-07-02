@@ -113,7 +113,7 @@ fn relu(z: f32) -> f32 {
 /// 2) Use 1 when z > 0, otherwise 0.
 /// 3) At z = 0, use 0 for this project.
 fn relu_deriv(z: f32) -> f32 {
-    if z > 0 {
+    if z > 0.0 {
         return 1.0;
     }
 
@@ -151,7 +151,7 @@ impl DenseReluLayer {
     /// 3) Output length is O.
     pub fn forward(&self, x: &[f32]) -> Vec<f32> {
         // TODO: compute y_hat = relu(forward_linear(x))
-        let mut a = Vec::with_capacity(x.len());
+        let mut a = Vec::with_capacity(self.b.len());
  
         for z in self.forward_linear(x) {
             a.push(relu(z));
@@ -199,7 +199,7 @@ pub fn dense_relu_gradients(
 
     for i in 0..d {
         for j in 0..o {
-            d_w[i][j] = (y_hat[j]-y[j]) * (relu_deriv(z[j])) * (x[j]);
+            d_w[i][j] = (y_hat[j]-y[j]) * (relu_deriv(z[j])) * (x[i]);
         }
     }
 
@@ -220,21 +220,21 @@ pub fn sgd_update_dense_relu(
     db: &[f32],
     lr: f32,
 ) {
-    // TODO: apply SGD update to W and b
-        for i in 0..layer.w.len() {
+    for i in 0..layer.w.len() {
         for j in 0..layer.w[0].len() {
-            layer.w[i][j] = layer.w[i][j] - lr * dW[i][j];
+            layer.w[i][j] -= lr * dW[i][j];
         }
     }
     for j in 0..layer.w[0].len() {
-        layer.b[j] = layer.b[j] - lr * db[j];
+        layer.b[j] -= lr * db[j];
     }
 }
 
 /// Hints:
 /// 1) Same epoch structure as Step 16.
-/// 2) Accumulate dW/db over all samples, average, then update once.
+/// 2) Accumulate dW/db  over all samples, average, then update once.
 /// 3) Inputs are N x D, targets are N x O.
+// Bonus::: Don't set w and b to all zeros for higher accuracy and better results. try 0.1
 impl Solution {
     pub fn train_dense_relu_layer(
         xs: Vec<Vec<f32>>, // shape: N x D
@@ -242,8 +242,48 @@ impl Solution {
         lr: f32,
         epochs: usize,
     ) -> DenseReluLayer {
-        // TODO: implement full training loop for dense + ReLU
-        unimplemented!()
+        let n = xs.len();
+        let d = xs[0].len();
+        let o = ys[0].len();
+
+        let mut layer = DenseReluLayer {
+            w: vec![vec![0.1; o]; d],
+            b: vec![0.1; o],
+        };
+
+        for e in 0..epochs {
+
+            let mut db_sum = vec![0.0; o];
+            let mut dw_sum = vec![vec![0.0; o]; d];
+            
+            for n in 0..n {
+                let (d_w, db) = dense_relu_gradients(&layer, &xs[n], &ys[n]);
+
+                for i in 0..d {
+                    for j in 0..o {
+                        dw_sum[i][j] += d_w[i][j];
+                    }
+                }
+
+                for j in 0..o {
+                    db_sum[j] += db[j];
+                }
+            }
+
+            for i in 0..d {
+                for j in 0..o {
+                    dw_sum[i][j] /= n as f32; 
+                }
+            }
+
+            for j in 0..o {
+                db_sum[j] /= n as f32;
+            }
+
+            sgd_update_dense_relu(&mut layer, &dw_sum, &db_sum, lr);
+        }
+
+        layer
     }
 }
 
