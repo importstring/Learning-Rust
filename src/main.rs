@@ -176,7 +176,7 @@ impl TwoLayerNet {
     pub fn forward_hidden_activation(&self, x: &[f32]) -> Vec<f32> {
         let z1 = self.forward_hidden_linear(x);
         
-        let mut a1 = Vec::with_capacity(z.len());
+        let mut a1 = Vec::with_capacity(z1.len());
 
         for z in z1 {
             a1.push(relu(z));
@@ -186,7 +186,15 @@ impl TwoLayerNet {
     }
 
     pub fn forward_output(&self, a1: &[f32]) -> Vec<f32> {
-        unimplemented!()
+        let mut z = self.b2.clone();
+
+        for i in 0..self.w2.len() {
+            for j in 0..self.w2[0].len() {
+                z[j] += x[i] * self.w2[i][j];
+            }
+        }
+
+        z
     }
 
     pub fn forward(&self, x: &[f32]) -> Vec<f32> {
