@@ -117,7 +117,11 @@ impl Solution {
     /// 2) Use 1.0 when z > 0.0.
     /// 3) Use 0.0 when z <= 0.0.
     pub fn relu_deriv(z: f32) -> f32 {
-        unimplemented!()
+        if z > 0.0 {
+            return 1.0;
+        }
+
+        0.0
     }
 
     /// Hints:
@@ -125,22 +129,25 @@ impl Solution {
     /// 2) This is dL/dy_hat for 0.5 * (y_hat - y)^2.
     /// 3) Output is one scalar for one coordinate.
     pub fn get_diff(y_hat_j: f32, y_j: f32) -> f32 {
-        unimplemented!()
+        y_hat_j - y_j
     }
 
-    /// Hints:
-    /// 1) delta combines output error with activation slope.
-    /// 2) delta[j] = diff[j] * relu_deriv(z[j]).
-    /// 3) Think: if ReLU is closed, should gradient pass?
+    /// Notes:
+    // there's a common term between both d_w & d_b
+    // it's the first two derivitives. The change 
+    // in the loss with respect to the the activiation 
+    // and the change in the activiation with respect
+    // to the activiation non-linear gate. So z becoming
+    // a which is essentially just relu. 
     pub fn get_delta(diff_j: f32, z_j: f32) -> f32 {
-        unimplemented!()
+        diff_j * Self::relu_deriv(z_j)
     }
 
     /// Hints:
     /// 1) Bias gradient for one output neuron is just delta.
     /// 2) db[j] = delta[j].
     pub fn get_db(delta_j: f32) -> f32 {
-        unimplemented!()
+        delta_j
     }
 
     /// Hints:
@@ -148,35 +155,50 @@ impl Solution {
     /// 2) dW[i][j] = x[i] * delta[j].
     /// 3) One input coordinate, one output coordinate.
     pub fn get_dw(x_i: f32, delta_j: f32) -> f32 {
-        unimplemented!()
+        x_i * delta_j
     }
 
-    /// Hints:
-    /// 1) Build the full delta vector of length O.
-    /// 2) For each j: diff -> delta.
-    /// 3) Reuse get_diff and get_delta.
-    pub fn build_delta_vector(z: &[f32], y_hat: &[f32], y: &[f32]) -> Option<Vec<f32>> {
-        unimplemented!()
+   pub fn build_delta_vector(z: &[f32], y_hat: &[f32], y: &[f32]) -> Option<Vec<f32>> {
+        if z.len() != y_hat.len() || y_hat.len() != y.len() {
+            return None;
+        }
+
+        let mut delta = Vec::with_capacity(z.len());
+
+        for j in 0..z.len() {
+            let diff_j = Solution::get_diff(y_hat[j], y[j]);
+            let delta_j = Solution::get_delta(diff_j, z[j]);
+            delta.push(delta_j);
+        }
+
+        Some(delta)
     }
 
-    /// Hints:
-    /// 1) db is just a copy of delta coordinate-wise.
-    /// 2) Reuse get_db.
     pub fn build_db(delta: &[f32]) -> Vec<f32> {
-        unimplemented!()
+        let mut d_b = Vec::with_capacity(delta.len());
+
+        for j in 0..delta.len() {
+            d_b.push(Solution::get_db(delta[j]));
+        }
+
+        d_b
     }
 
-    /// Hints:
-    /// 1) dW has shape D x O.
-    /// 2) For each pair (i, j), use get_dw(x[i], delta[j]).
-    /// 3) Reuse the sub-function rather than redoing the formula inline.
     pub fn build_d_w(x: &[f32], delta: &[f32]) -> Vec<Vec<f32>> {
-        unimplemented!()
+        let d = x.len();
+        let o = delta.len();
+
+        let mut d_w = vec![vec![0.0; o]; d];
+
+        for i in 0..d {
+            for j in 0..o {
+                d_w[i][j] = Solution::get_dw(x[i], delta[j]);
+            }
+        }
+
+        d_w
     }
 
-    /// Main function:
-    /// You should not need to touch this much.
-    /// Focus on the sub-functions above.
     pub fn dense_relu_gradients_from_delta(
         layer: &DenseReluLayer,
         x: &[f32],
@@ -200,7 +222,7 @@ impl Solution {
         }
 
         let z = layer.forward_linear(x);
-        let y_hat = layer.forward(x); // you'll do these for me just this time
+        let y_hat = layer.forward(x);
 
         let delta = Solution::build_delta_vector(&z, &y_hat, y)?;
         let d_b = Solution::build_db(&delta);
@@ -209,7 +231,7 @@ impl Solution {
         Some((d_w, d_b))
     }
 }
-
+  
 /* Tests */
 
 fn floats_close(a: f32, b: f32, eps: f32) -> bool {
