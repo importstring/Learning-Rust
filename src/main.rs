@@ -276,7 +276,7 @@ pub fn output_layer_gradients(
         }
     }
 
-    (d_w2, db2)
+    (d_w2, db2.to_vec())
 }
 
 
@@ -297,7 +297,7 @@ pub fn hidden_layer_gradients(
         }
     }
 
-    (d_w1, db1)
+    (d_w1, db1.to_vec())
 }
 
 
@@ -373,13 +373,13 @@ impl Solution {
 
         let mut net = TwoLayerNet {
             // W1: D x H
-            w1: vec![vec![0.1; hidden_dim]; d],
+            w1: vec![vec![0.7; hidden_dim]; d],
             // b1: H
-            b1: vec![0.1; hidden_dim],
+            b1: vec![0.4; hidden_dim],
             // W2: H x O
-            w2: vec![vec![0.1; o]; hidden_dim],
+            w2: vec![vec![0.5; o]; hidden_dim],
             // b2: O
-            b2: vec![0.1; o],
+            b2: vec![0.5; o],
         };
 
         for e in 0..epochs {
@@ -392,15 +392,15 @@ impl Solution {
             for n in 0..n {
                 let (d_w1, db1, d_w2, db2) = two_layer_gradients(&net, &xs[n], &ys[n]);
 
-                for i in 0..dw_1.len() {
-                    for j in 0..dw_1[0].len() {
-                        dw_sum1[i][j] += d_w1[i][j] / n;
+                for i in 0..d_w1.len() {
+                    for j in 0..d_w1[0].len() {
+                        dw_sum1[i][j] += d_w1[i][j] / n as f32;
                     }
                 }
 
-                for i in 0..dw_2.len() {
-                    for j in 0..dw_2[0].len() {
-                        dw_sum2[i][j] += d_w2[i][j] / n; 
+                for i in 0..d_w2.len() {
+                    for j in 0..d_w2[0].len() {
+                        dw_sum2[i][j] += d_w2[i][j] / n as f32; 
                     }
                 }
 
@@ -413,7 +413,7 @@ impl Solution {
                 }
             }
 
-            sgd_update_two_layer(&mut net, &dw_sum1, &db_sum1, &dw_sum2, &db_sum2);
+            sgd_update_two_layer(&mut net, &dw_sum1, &db_sum1, &dw_sum2, &db_sum2, lr);
         }
 
         net
