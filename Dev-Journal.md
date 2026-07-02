@@ -315,7 +315,3 @@ I've been using this really cool browser extension lately for doing math. The `\
 ```latex
 \begin{aligned}&z_j=\sum_{k=0}^{D-1}x_kW_{kj}+b_j\\&\hat{y}_j=ReLU\left(z_j\right)\\&Input->y_i\\&L=\frac{1}{2}\sum_{j=0}^{O-1}\left(\hat{y}_j-y_j\right)^2\\&\frac{\partial L}{\partial W_{ij}}=L\left(\hat{y}_j\left(z_j\left(W_{ij}\right)\right)\right)\\&\frac{\partial L}{\partial b_j}=L\left(\hat{y}_j\left(z_j\left(b_j\right)\right)\right)\\&\frac{\partial L}{\partial W_{ij}}=\left(\frac{\partial L_j}{\partial\hat{y}_j}\right)\left(\frac{\partial\hat{y}_j}{\partial z_j}\right)\left(\frac{\partial z_j}{\partial W_{ij}}\right)\\&\frac{\partial L}{\partial b_j}=\left(\frac{\partial L_j}{\partial\hat{y}_j}\right)\left(\frac{\partial\hat{y}_j}{\partial z_j}\right)\left(\frac{\partial z_j}{\partial b_j}\right)\\&\frac{\partial z_j}{\partial W_{ij}}=x_i\\&\frac{\partial\hat{y}_j}{\ \partial z_j}=ReLU'\left(z_j\right)\\&\ \ \frac{\partial L_j}{\partial\hat{y}_j}=\hat{y}_j-y_j\\&\frac{\partial z_j}{\partial b_j}=1\\&\frac{\partial L}{\partial W_{ij}}=\left(\hat{y}_j-y_j\right)\left(ReLU'\left(z_j\right)\right)\left(x_i\right)\\&\frac{\partial L}{\partial b_j}=\left(\hat{y_j}-y_j\right)\left(ReLU'\left(z_j\right)\right)\\&\\&\delta=\left(\hat{y}_j-y_j\right)\left(ReLU'\left(z_j\right)\right)\\&\frac{\partial L}{\partial W_{ij}}=\delta x_i\\&\frac{\partial L}{\partial b_j}=\partial\end{aligned}
 ```
-
-```
-
-```
