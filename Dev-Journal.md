@@ -325,5 +325,5 @@ Plus the hidden-layer delta:
 
 $$
 \delta^{(1)}_h
-= \left( \sum_j W^{(2)}_{h j} \, \delta_j \right) \operatorname{ReLU}'(z^{(1)}_h)
+= \left( \sum_j W^{(2)}_{h j} \, \delta_j \right) \text{ReLU}'(z^{(1)}_h)
 $$
