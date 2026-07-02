@@ -272,11 +272,11 @@ pub fn output_layer_gradients(
     
     for i in 0..a1.len() {
         for j in 0..delta2.len() {
-            d_w2[i][j] = a1[h] * delta2[j];
+            d_w2[i][j] = a1[i] * delta2[j];
         }
     }
 
-    (db2, d_w2)
+    (d_w2, db2)
 }
 
 
