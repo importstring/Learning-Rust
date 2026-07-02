@@ -186,15 +186,15 @@ impl TwoLayerNet {
     }
 
     pub fn forward_output(&self, a1: &[f32]) -> Vec<f32> {
-        let mut z = self.b2.clone();
+        let mut a2 = self.b2.clone();
 
         for i in 0..self.w2.len() {
             for j in 0..self.w2[0].len() {
-                z[j] += x[i] * self.w2[i][j];
+                a2[j] += self.w2[i][j] * a1[i];
             }
         }
 
-        z
+        a2
     }
 
     pub fn forward(&self, x: &[f32]) -> Vec<f32> {
@@ -224,11 +224,17 @@ pub fn loss_mse_vec(y_hat: &[f32], y: &[f32]) -> f32 {
 /// 1) For a linear output layer with MSE, delta2[j] = y_hat[j] - y[j].
 /// 2) This is the same diff term as before, but no ReLU gate at output.
 pub fn output_delta_linear(y_hat: &[f32], y: &[f32]) -> Vec<f32> {
-    unimplemented!()
+    let o = y.len(); 
+
+    let mut delta = vec![0.0; o];
+    for j in 0..o {
+        delta[j] = y_hat[j] - y[j];
+    }
+
+    delta
 }
 
 
-/// Hints:
 /// 1) back_h = sum_j W2[h][j] * delta2[j].
 /// 2) Then gate by relu_deriv(z1[h]).
 /// 3) Output length is H.
@@ -237,7 +243,20 @@ pub fn hidden_delta_relu(
     z1: &[f32],
     delta2: &[f32],
 ) -> Vec<f32> {
-    unimplemented!()
+    let h = net.b1.len();      // hidden size H
+    let o = net.b2.len();      // output size O
+
+    let mut delta1 = vec![0.0; h];
+
+    for h_idx in 0..h {
+        let mut back_h = 0.0;
+        for j in 0..o {
+            back_h += net.w2[h_idx][j] * delta2[j];
+        }
+        delta1[h_idx] = back_h * relu_deriv(z1[h_idx]);
+    }
+
+    delta1
 }
 
 
@@ -248,7 +267,16 @@ pub fn output_layer_gradients(
     a1: &[f32],
     delta2: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
-    unimplemented!()
+    let db2 = delta2.clone();
+    let mut d_w2 = vec![vec![0.0; delta2.len()]; a1.len()];
+    
+    for i in 0..a1.len() {
+        for j in 0..delta2.len() {
+            d_w2[i][j] = a1[h] * delta2[j];
+        }
+    }
+
+    (db2, d_w2)
 }
 
 
@@ -259,7 +287,18 @@ pub fn hidden_layer_gradients(
     x: &[f32],
     delta1: &[f32],
 ) -> (Vec<Vec<f32>>, Vec<f32>) {
-    unimplemented!()
+    let db1 = delta1.clone();
+    
+    let db1 = delta1.clone();
+    let mut d_w1 = vec![vec![0.0; delta1.len()]; x.len()];
+
+    for i in 0..x.len() {
+        for j in 0..delta1.len() {
+            d_w1[i][j] = x[i] * delta1[j];
+        }
+    }
+
+    (d_w1, db1)
 }
 
 
