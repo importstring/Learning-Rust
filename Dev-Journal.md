@@ -301,7 +301,7 @@ fn main() {
   <em>2026-06-27 · Week 5</em>
 </p>
 
-Stil yet to add randomness to the wieghts and bias tuning process. Today I discovered this was really really hurting performance. Basically every neuron had the exact same wieght and bias. Basically a symetry, The ideal would be for each to symbolize a different trend and pattern in the data and then together they'll fidn the pattern.
+Still yet to add randomness to the wieghts and bias tuning process. Today I discovered this was really really hurting performance. Basically every neuron had the exact same wieght and bias. Basically a symetry, The ideal would be for each to symbolize a different trend and pattern in the data and then together they'll fidn the pattern.
 
 I'm planning on doing a new activity where I do simply a bunch of exercises of just initializing a bunch of different random wieghts and biases. After all the whole goal of this project is building my ML understanding, not just speed with random functions in libraries.
 
