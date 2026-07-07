@@ -107,3 +107,33 @@ for row in &matrix { ... } // because row inherits the val from matrix
 let x = 43.32_f32; // Learned that I can just do _f32 and it's pretty
 
 ```
+
+<h4 style="margin-bottom:0;">Built a multi-neuron, 2d net</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-06-27 · Week 5</em>
+</p>
+
+Stil yet to add randomness to the wieghts and bias tuning process. Today I discovered this was really really hurting performance. Basically every neuron had the exact same wieght and bias. Basically a symetry, The ideal would be for each to symbolize a different trend and pattern in the data and then together they'll fidn the pattern.
+
+I'm planning on doing a new activity where I do simply a bunch of exercises of just initializing a bunch of different random wieghts and biases. After all the whole goal of this project is building my ML understanding, not just speed with random functions in libraries.
+
+I've been using this really cool browser extension lately for doing math. The `\partial` command has come in handy every day constantly. I've found once I understood the math and solved derivitives myself, things started making a lot more sense.
+
+I kept looking at these solutions using "delta" all the while thinking how it's strange how I'm doing diff xi and diff for d_w and d_b instead of just setting diff as a universal term or something. It just so happened that I glanced at a solution with calculations for delta and realized it's just the first and second derivitive.
+
+$$
+\delta_j = \hat{y}_j - y_j
+$$
+
+I then calculated these manually for the second layer for learning purposes.
+
+$$
+\frac{\partial L}{\partial W^{(2)}_{h j}} = \delta_j \, a^{(1)}_h
+\qquad
+\frac{\partial L}{\partial b^{(2)}_j} = \delta_j
+$$
+
+$$
+\delta^{(1)}_h
+= \left( \sum_j W^{(2)}_{h j} \, \delta_j \right) \text{ReLU}'(z^{(1)}_h)
+$$
